@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../widgets/navbar.dart';
+
 void main() {
   runApp(const MaterialApp(
     home: RestaurantPage(),
@@ -282,6 +284,8 @@ class _RestaurantPageState extends State<RestaurantPage> {
           ],
         ),
       ),
+
+      bottomNavigationBar: navbar(context),
     );
   }
 }
