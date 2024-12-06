@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "package:jajan_jogja_mobile/widgets/navbar.dart";
 
 class FoodPlans extends StatelessWidget {
   const FoodPlans({Key? key}) : super(key: key);
@@ -6,9 +7,7 @@ class FoodPlans extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        //title: const Text('Food Plans'),
-      ),
+      bottomNavigationBar: navbar(context),
       body: Container(
         color: Colors.green,
         child: Column(
