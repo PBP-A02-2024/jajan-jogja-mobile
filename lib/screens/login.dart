@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:jajan_jogja_mobile/marco/screens/restaurant.dart';
+import 'package:jajan_jogja_mobile/zoya/screens/landing_page.dart';
 import 'package:jajan_jogja_mobile/screens/register.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
@@ -190,7 +190,7 @@ class _LoginPageState extends State<LoginPage> {
                                     Navigator.pushReplacement(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => RestaurantPage()),
+                                          builder: (context) => LandingPage()),
                                     );
                                     ScaffoldMessenger.of(context)
                                       ..hideCurrentSnackBar()

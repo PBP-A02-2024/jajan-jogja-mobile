@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:jajan_jogja_mobile/zoya/screens/landing_page.dart';
 
 Container navbar(context){
   return Container(
@@ -20,7 +21,13 @@ Container navbar(context){
                   color:  Color(0XFF7A7A7A),
                   size: 24.0,
                 ),
-                onPressed: (){},
+                onPressed: () async {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => LandingPage()),
+                  );
+                },
               ),
               Text(
                 "Home",
