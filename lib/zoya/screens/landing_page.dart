@@ -25,12 +25,9 @@ class LandingPage extends StatelessWidget {
   Future<String> fetchUsername(int userId, CookieRequest request) async {
     final response = await request.get('http://127.0.0.1:8000/json-user/$userId/');
 
-    // Check if the response is not null
     if (response != null) {
-      // The response should already be a map (decoded JSON), so no need to jsonDecode it
       var data = response;
 
-      // Extract the username from the response map
       String username = data['username'] ?? 'Anonymous';
 
       return username;
@@ -90,7 +87,6 @@ class LandingPage extends StatelessWidget {
                 }).toList(),
               ),
               const SizedBox(height: 24),
-              // Header Text
               const Text(
                 "Looking for places to eat in Jogja?",
                 style: TextStyle(
@@ -101,7 +97,6 @@ class LandingPage extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 24),
-              // Community Forum
               const Text(
                 "Community Forum",
                 style: TextStyle(
