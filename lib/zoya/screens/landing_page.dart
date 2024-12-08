@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:intl/intl.dart';
@@ -13,17 +14,26 @@ void main() {
   ));
 }
 
-class LandingPage extends StatelessWidget {
-  LandingPage({super.key});
+class LandingPage extends StatefulWidget {
+  const LandingPage({super.key});
 
+  @override
+  _LandingPageState createState() => _LandingPageState();
+}
+
+class _LandingPageState extends State<LandingPage> {
   final List<String> carouselImages = [
     'https://images.unsplash.com/photo-1524985069026-dd778a71c7b4',
     'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4',
     'https://images.unsplash.com/photo-1482049016688-2d3e1b311543',
   ];
 
+  final _commentController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+
   Future<String> fetchUsername(int userId, CookieRequest request) async {
-    final response = await request.get('http://127.0.0.1:8000/json-user/$userId/');
+    final response =
+        await request.get('http://127.0.0.1:8000/json-user/$userId/');
 
     if (response != null) {
       var data = response;
@@ -36,11 +46,12 @@ class LandingPage extends StatelessWidget {
     }
   }
 
-  Future<List<CommunityForumEntry>> fetchCommunityForum(CookieRequest request) async {
+  Future<List<CommunityForumEntry>> fetchCommunityForum(
+      CookieRequest request) async {
     final response = await request.get('http://127.0.0.1:8000/json-forum/');
 
     var data = response;
-    
+
     List<CommunityForumEntry> listCommunityForum = [];
     for (var d in data) {
       if (d != null) {
@@ -50,6 +61,26 @@ class LandingPage extends StatelessWidget {
     return listCommunityForum;
   }
 
+  Future<void> postForumEntry(CookieRequest request) async {
+    if (_formKey.currentState!.validate()) {
+      final response = await request.postJson(
+        'http://127.0.0.1:8000/create-flutter/',
+        jsonEncode({'comment': _commentController.text}),
+      );
+      if (response['status'] == 'success') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Forum posted successfully')),
+        );
+        setState(() {
+          _commentController.clear();
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: ${response['message']}')),
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -106,7 +137,43 @@ class LandingPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 12),
-
+              Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: TextFormField(
+                        controller: _commentController,
+                        decoration: const InputDecoration(
+                          hintText: 'Write a comment...',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(8)),
+                          ),
+                        ),
+                        maxLines: 3,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter a comment';
+                          }
+                          return null;
+                        },
+                      ),
+                    ),
+                    ElevatedButton(
+                      onPressed: () => postForumEntry(request),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF7C1D05),
+                      ),
+                      child: const Text('Post',
+                          style: TextStyle(
+                            color: Color(0xFFEBE9E1),
+                          )),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
               FutureBuilder<List<CommunityForumEntry>>(
                 future: fetchCommunityForum(request),
                 builder: (context, snapshot) {
@@ -135,17 +202,21 @@ class LandingPage extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: snapshot.data!.map((entry) {
                             return Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 8.0),
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 8.0),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   FutureBuilder<String>(
-                                    future: fetchUsername(entry.fields.user, request),
+                                    future: fetchUsername(
+                                        entry.fields.user, request),
                                     builder: (context, userSnapshot) {
-                                      if (userSnapshot.connectionState == ConnectionState.waiting) {
+                                      if (userSnapshot.connectionState ==
+                                          ConnectionState.waiting) {
                                         return const CircularProgressIndicator();
                                       } else if (userSnapshot.hasError) {
-                                        return Text('Error: ${userSnapshot.error}');
+                                        return Text(
+                                            'Error: ${userSnapshot.error}');
                                       } else {
                                         return Text(
                                           "${userSnapshot.data}",
@@ -161,7 +232,8 @@ class LandingPage extends StatelessWidget {
                                   const SizedBox(height: 6),
                                   Text(
                                     entry.fields.comment,
-                                    style: const TextStyle(fontSize: 14, color: Color(0xFF7A7A7A)),
+                                    style: const TextStyle(
+                                        fontSize: 14, color: Color(0xFF7A7A7A)),
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
