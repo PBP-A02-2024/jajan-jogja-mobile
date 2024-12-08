@@ -12,8 +12,7 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
-  Future<List<Search>> fetchProduct(CookieRequest request) async {
-    // TODO: Ganti URL dan jangan lupa tambahkan trailing slash (/) di akhir URL!
+  Future<List<Search>> fetchSearch(CookieRequest request) async {
     final response = await request.get('http://localhost:8000/search/show-search-history/');
     
     // Melakukan decode response menjadi bentuk json
@@ -29,6 +28,22 @@ class _SearchPageState extends State<SearchPage> {
     return listSearch;
   }
 
+  Future<List<TempatKuliner>> fetchResto(CookieRequest request) async {
+    final response = await request.get('http://localhost:8000/search/show-search-history/');
+    
+    // Melakukan decode response menjadi bentuk json
+    var data = response;
+    
+    // Melakukan konversi data json menjadi object ProductEntry
+    List<Restaurant> listResto = [];
+    for (var d in data) {
+      if (d != null) {
+        listResto.add(Restaurant.fromJson(d));
+      }
+    }
+    return listResto;
+  }
+
   @override
   Widget build(BuildContext context) {
     final request = context.watch<CookieRequest>();
@@ -36,7 +51,7 @@ class _SearchPageState extends State<SearchPage> {
       appBar: headerApp(context),
       bottomNavigationBar: navbar(context),
       body: FutureBuilder(
-        future: fetchProduct(request),
+        future: fetchSearch(request),
         builder: (context, AsyncSnapshot snapshot) {
           if (snapshot.data == null) {
             return const Center(child: CircularProgressIndicator());
