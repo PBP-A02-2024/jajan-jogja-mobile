@@ -3,6 +3,7 @@ import 'package:jajan_jogja_mobile/screens/login.dart';
 import 'package:provider/provider.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:jajan_jogja_mobile/farrel/screens/food_plans.dart';
 
 void main() {
   runApp(const MyApp());
@@ -46,7 +47,7 @@ class MyApp extends StatelessWidget {
             textTheme: ButtonTextTheme.primary,
           ),
         ),
-        home: LoginPage(), // Set RegisterPage as home
+        home: FoodPlans(), // Set RegisterPage as home
       ),
     );
   }
