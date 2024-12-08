@@ -16,28 +16,26 @@ class FoodCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('Building FoodCard for $name');
     return Container(
-      margin: EdgeInsets.all(8),
-      padding: EdgeInsets.all(12),
+      width: 150, // Adjust as needed
+      margin: const EdgeInsets.only(right: 16),
       decoration: BoxDecoration(
-        color: Color(0xFFEBE9E1), // Background color
-        borderRadius: BorderRadius.circular(16), // Rounded corners
-        border: Border.all(color: Colors.orange, width: 2), // Border
+        color: const Color(0xFFEBE9E1), // Light background color
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.orange, width: 2),
         boxShadow: [
           BoxShadow(
             color: Colors.grey.shade300,
             blurRadius: 5,
-            offset: Offset(2, 2),
+            offset: const Offset(2, 2),
           ),
         ],
-      ),
-      constraints: BoxConstraints(
-        minWidth: 150,
-        minHeight: 200,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Food Image
           Container(
             height: 100,
             width: double.infinity,
@@ -45,32 +43,55 @@ class FoodCard extends StatelessWidget {
               color: Colors.grey.shade200,
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Image.network(
-              imageUrl,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) {
-                return Center(child: Text('IMG'));
-              },
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Image.network(
+                imageUrl,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return const Center(child: Text('IMG'));
+                },
+              ),
             ),
           ),
-          SizedBox(height: 8),
-          Text(
-            name,
-            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.brown),
-            overflow: TextOverflow.ellipsis,
-            maxLines: 1,
+          const SizedBox(height: 8),
+          // Food Name with padding
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: Text(
+              name,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).colorScheme.secondary,
+              ),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+            ),
           ),
-          SizedBox(height: 4),
-          Text(
-            description,
-            style: TextStyle(color: Colors.grey),
-            overflow: TextOverflow.ellipsis,
-            maxLines: 2,
+          const SizedBox(height: 4),
+          // Description with padding
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: Text(
+              description,
+              style: TextStyle(
+                color: Colors.grey, // Changed to non-const
+              ),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 2,
+            ),
           ),
-          Spacer(),
-          Text(
-            'IDR $price',
-            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.brown),
+          const Spacer(),
+          // Price with padding
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+            child: Text(
+              'IDR $price',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).colorScheme.secondary,
+              ),
+            ),
           ),
         ],
       ),

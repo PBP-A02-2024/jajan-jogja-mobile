@@ -3,7 +3,8 @@ import 'package:jajan_jogja_mobile/screens/login.dart';
 import 'package:provider/provider.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:jajan_jogja_mobile/farrel/screens/food_plans.dart';
+import 'package:jajan_jogja_mobile/farrel/screens/food_plan_list.dart';
+import 'package:jajan_jogja_mobile/screens/register.dart';
 
 void main() {
   runApp(const MyApp());
@@ -36,7 +37,8 @@ class MyApp extends StatelessWidget {
           ),
           scaffoldBackgroundColor: const Color(0xFFEBE9E1), // white background
           useMaterial3: true,
-          textTheme: GoogleFonts.jockeyOneTextTheme( // Apply Jockey One font to text theme
+          textTheme: GoogleFonts.jockeyOneTextTheme(
+            // Apply Jockey One font to text theme
             const TextTheme(
               bodySmall: TextStyle(color: Color(0xFF0F0401)), // black text
               labelSmall: TextStyle(color: Color(0xFF7A7A7A)), // grey text
@@ -47,7 +49,7 @@ class MyApp extends StatelessWidget {
             textTheme: ButtonTextTheme.primary,
           ),
         ),
-        home: FoodPlans(), // Set RegisterPage as home
+        home: RegisterPage(), // Set RegisterPage as home
       ),
     );
   }

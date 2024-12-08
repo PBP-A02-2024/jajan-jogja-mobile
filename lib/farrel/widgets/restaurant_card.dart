@@ -6,7 +6,6 @@ class RestaurantCard extends StatelessWidget {
   final String address;
   final double distance;
   final List<Map<String, dynamic>> foods;
-  
 
   const RestaurantCard({
     Key? key,
@@ -24,6 +23,7 @@ class RestaurantCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.orange, width: 2),
         boxShadow: [
           BoxShadow(
             color: Colors.grey.shade300,
@@ -40,7 +40,7 @@ class RestaurantCard extends StatelessWidget {
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 18,
-              color: Colors.brown,
+              color: Theme.of(context).colorScheme.secondary,
             ),
             overflow: TextOverflow.ellipsis,
             maxLines: 1,
@@ -58,7 +58,7 @@ class RestaurantCard extends StatelessWidget {
             style: TextStyle(color: Colors.orange, fontSize: 14),
           ),
           SizedBox(height: 16),
-          Container(
+          SizedBox(
             height: 250, // Adjust height based on FoodCard
             child: ListView.builder(
                 scrollDirection: Axis.horizontal,
