@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../widgets/navbar.dart';
+import 'package:jajan_jogja_mobile/vander/widgets/review_list_widget.dart';
+import 'package:jajan_jogja_mobile/vander/screens/review_form.dart';
 
 void main() {
   runApp(const MaterialApp(
@@ -10,7 +12,7 @@ void main() {
 }
 
 class RestaurantPage extends StatefulWidget {
-  const RestaurantPage({Key? key}) : super(key: key);
+  const RestaurantPage({super.key});
 
   @override
   State<RestaurantPage> createState() => _RestaurantPageState();
@@ -19,11 +21,11 @@ class RestaurantPage extends StatefulWidget {
 class _RestaurantPageState extends State<RestaurantPage> {
   // Dummy data for the restaurant
   final Map<String, dynamic> restaurant = {
-    'nama': 'Tengkleng Gajah, Kaliurang',
+    'nama': 'Tengkleng Gajah, Kaliurang ',
     'description': 'Tempat makanan paling enak di jogja',
     'alamat': 'Jl. Kaliurang KM 9.3, Ngaglik, Yogyakarta',
     'foto_link':
-    'https://i.gojekapi.com/darkroom/gofood-indonesia/v2/images/uploads/ce17065d-f8b6-45f6-bc0d-872a05253536_Go-Biz_20220823_113519.jpeg?auto=format',
+        'https://i.gojekapi.com/darkroom/gofood-indonesia/v2/images/uploads/ce17065d-f8b6-45f6-bc0d-872a05253536_Go-Biz_20220823_113519.jpeg?auto=format',
     'jamBuka': '08:00',
     'jamTutup': '22:00',
     'rating': 4.5,
@@ -36,16 +38,40 @@ class _RestaurantPageState extends State<RestaurantPage> {
       'description': 'Peyek Kacang, Peyek Jingking, Peyek Udang Kecil',
       'harga': 18000,
       'foto_link':
-      'https://i.gojekapi.com/darkroom/gofood-indonesia/v2/images/uploads/df40318e-0335-4c53-b383-1291dc3afde3_Go-Biz_20240124_085936.jpeg?auto=format',
+          'https://i.gojekapi.com/darkroom/gofood-indonesia/v2/images/uploads/df40318e-0335-4c53-b383-1291dc3afde3_Go-Biz_20240124_085936.jpeg?auto=format',
     },
     {
       'nama': 'Tengkleng Gajah Original',
       'description': 'Olahan Tulang Kambing ',
       'harga': 75000,
       'foto_link':
-      'https://i.gojekapi.com/darkroom/gofood-indonesia/v2/images/uploads/b5480dad-c724-49e9-a362-e646f39778cb_Go-Biz_20241017_085723.jpeg?auto=format',
+          'https://i.gojekapi.com/darkroom/gofood-indonesia/v2/images/uploads/b5480dad-c724-49e9-a362-e646f39778cb_Go-Biz_20241017_085723.jpeg?auto=format',
     },
   ];
+  final tempatKulinerId = "2dbf8eaa-7533-4047-b420-93b496cd4ca0";
+  final tempatKulinerNama = "NamakuBebas";
+  int _reviewListKey = 0;
+
+  void _goToAddReview() async {
+    // Navigate to ReviewEntryFormPage and wait for the result
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ReviewEntryFormPage(
+          tempatKulinerId: tempatKulinerId,
+          tempatKulinerNama: tempatKulinerNama,
+        ),
+      ),
+    );
+
+    // If a new review was added, trigger a refresh
+    if (result == true) {
+      setState(() {
+        // Increment a key or trigger a rebuild in another way
+        _reviewListKey++;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -188,7 +214,7 @@ class _RestaurantPageState extends State<RestaurantPage> {
                     margin: const EdgeInsets.only(bottom: 16),
                     decoration: BoxDecoration(
                       border:
-                      Border.all(color: const Color(0xFFC98809), width: 4),
+                          Border.all(color: const Color(0xFFC98809), width: 4),
                       borderRadius: BorderRadius.circular(24),
                     ),
                     child: Padding(
@@ -239,13 +265,10 @@ class _RestaurantPageState extends State<RestaurantPage> {
                               ],
                             ),
                           ),
-                          // Add to Cart or Action Button
                           IconButton(
                             icon: const Icon(Icons.add_circle_outline),
                             color: const Color(0xFFE43D12),
-                            onPressed: () {
-                              // Handle add to cart or action
-                            },
+                            onPressed: () {},
                           ),
                         ],
                       ),
@@ -264,22 +287,16 @@ class _RestaurantPageState extends State<RestaurantPage> {
                 color: Color(0xFF7C1D05),
               ),
             ),
+            IconButton(
+              onPressed: _goToAddReview,
+              icon: const Icon(Icons.add_comment),
+              color: const Color(0xFFD6536D),
+              tooltip: "Add Review",
+            ),
             const SizedBox(height: 16),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                border: Border.all(color: const Color(0xFFD6536D), width: 2),
-                borderRadius: BorderRadius.circular(24),
-              ),
-              child: const Center(
-                child: Text(
-                  'No reviews yet.',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Color(0xFF7A7A7A),
-                  ),
-                ),
-              ),
+            ReviewsListWidget(
+              theKey: ValueKey(_reviewListKey),
+              tempatKulinerId: tempatKulinerId,
             ),
           ],
         ),
