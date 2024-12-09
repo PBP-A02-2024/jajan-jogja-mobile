@@ -1,73 +1,16 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:jajan_jogja_mobile/iyan/models/resto.dart';
-import 'package:jajan_jogja_mobile/marco/screens/restaurant.dart';
+import 'package:jajan_jogja_mobile/marco/screens/restaurant.dart'; // Import model TempatKuliner
 
 class CardTempat extends StatelessWidget {
   final TempatKuliner tempatKuliner;
+  final bool isAdmin; // Tambahkan parameter untuk mengecek apakah pengguna admin
 
-  const CardTempat(this.tempatKuliner, {super.key});
-
-  // Fungsi untuk mengedit resto
-  Future<void> editResto(BuildContext context, int restoId, String newComment) async {
-    final url = Uri.parse('http://your-django-url/edit_resto/$restoId/');
-
-    final response = await http.put(
-      url,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer YOUR_JWT_TOKEN', // Sesuaikan dengan metode otentikasi yang digunakan
-      },
-      body: json.encode({
-        'comment': newComment,
-      }),
-    );
-
-    if (response.statusCode == 200) {
-      // Tindakan setelah sukses edit
-      final data = json.decode(response.body);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Resto successfully edited!')),
-      );
-      // Anda bisa memperbarui tampilan atau data di sini
-    } else {
-      final data = json.decode(response.body);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: ${data['message']}')),
-      );
-    }
-  }
-
-  // Fungsi untuk menghapus resto
-  Future<void> deleteResto(BuildContext context, int restoId) async {
-    final url = Uri.parse('http://your-django-url/delete_resto/$restoId/');
-
-    final response = await http.delete(
-      url,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer YOUR_JWT_TOKEN', // Sesuaikan dengan metode otentikasi yang digunakan
-      },
-    );
-
-    if (response.statusCode == 200) {
-      // Tindakan setelah sukses delete
-      final data = json.decode(response.body);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Resto successfully deleted!')),
-      );
-      // Anda bisa memperbarui tampilan atau data di sini, misalnya pop untuk kembali
-    } else {
-      final data = json.decode(response.body);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: ${data['message']}')),
-      );
-    }
-  }
+  const CardTempat(this.tempatKuliner, {super.key, required this.isAdmin});
 
   @override
   Widget build(BuildContext context) {
+    // Mengambil data dari model TempatKuliner
     final idTempatKuliner = tempatKuliner.pk;
     final nama = tempatKuliner.fields.nama;
     final alamat = tempatKuliner.fields.alamat;
@@ -76,18 +19,17 @@ class CardTempat extends StatelessWidget {
 
     return GestureDetector(
       onTap: () async {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => RestaurantPage(idTempatKuliner: idTempatKuliner),
-          ),
-        );
-      },
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => RestaurantPage(idTempatKuliner: idTempatKuliner)),
+          );
+        },
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: SizedBox(
           width: 278,
-          height: 250, // Perbesar sedikit untuk menambah tombol
+          height: 200,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -95,7 +37,7 @@ class CardTempat extends StatelessWidget {
               // Foto resto
               Container(
                 width: 278,
-                height: 100,
+                height: 90,
                 decoration: BoxDecoration(
                   color: Colors.grey[200],
                   borderRadius: BorderRadius.circular(40),
@@ -107,7 +49,7 @@ class CardTempat extends StatelessWidget {
                     fotoLink,
                     fit: BoxFit.cover,
                     width: 278,
-                    height: 100,
+                    height: 90,
                   ),
                 ),
               ),
@@ -154,36 +96,27 @@ class CardTempat extends StatelessWidget {
                   ),
                 ],
               ),
-              SizedBox(height: 10),
-              // Row untuk tombol-tombol (Edit, Delete)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  // Edit button
-                  ElevatedButton(
-                    onPressed: () {
-                      // Aksi untuk edit, misalnya tampilkan dialog atau halaman untuk edit
-                      // Anda bisa mengganti ini dengan form edit komentar
-                      editResto(context, idTempatKuliner, "New Comment");
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFF7C1D04), // Warna tombol
+              // Tambahkan tombol edit & delete jika pengguna admin
+              if (isAdmin)
+                Row(
+                  children: [
+                    // edit
+                    ElevatedButton(
+                      onPressed: () {
+                        // To do: buat page edit
+                      },
+                      child: Text('Edit'),
                     ),
-                    child: Text('Edit'),
-                  ),
-                  // Delete button
-                  ElevatedButton(
-                    onPressed: () {
-                      // Aksi untuk delete
-                      deleteResto(context, idTempatKuliner);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red, // Warna tombol
+                    SizedBox(width: 8),
+                    // delete
+                    ElevatedButton(
+                      onPressed: () {
+                        // Hapus data
+                      },
+                      child: Text('Delete'),
                     ),
-                    child: Text('Delete'),
-                  ),
-                ],
-              ),
+                  ],
+                ),
             ],
           ),
         ),

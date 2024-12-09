@@ -20,10 +20,10 @@ class LandingPage extends StatefulWidget {
   const LandingPage({super.key});
 
   @override
-  _LandingPageState createState() => _LandingPageState();
+  LandingPageState createState() => LandingPageState();
 }
 
-class _LandingPageState extends State<LandingPage> {
+class LandingPageState extends State<LandingPage> {
   final List<String> carouselImages = [
     'https://images.unsplash.com/photo-1524985069026-dd778a71c7b4',
     'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4',
@@ -83,6 +83,9 @@ class _LandingPageState extends State<LandingPage> {
         'http://127.0.0.1:8000/create-flutter/',
         jsonEncode({'comment': _commentController.text}),
       );
+
+      if (!mounted) return;
+
       if (response['status'] == 'success') {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Forum posted successfully')),
@@ -161,7 +164,7 @@ class _LandingPageState extends State<LandingPage> {
                         children: snapshot.data!.map((entry) {
                           return Padding(
                             padding: const EdgeInsets.symmetric(vertical: 8.0),
-                            child: CardTempat(entry),
+                            child: CardTempat(entry, isAdmin: true,),
                           );
                         }).toList(),
                       ),

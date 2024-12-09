@@ -44,7 +44,7 @@ Container navbar(context) {
             onPressed: () async {
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => RestaurantPage()),
+                MaterialPageRoute(builder: (context) => LandingPage()),
               );
             },
           ),
