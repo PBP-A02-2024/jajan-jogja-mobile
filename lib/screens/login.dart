@@ -5,6 +5,8 @@ import 'package:jajan_jogja_mobile/screens/register.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
 
+import '../zoya/screens/landing_page.dart';
+
 void main() {
   runApp(const LoginApp());
 }
