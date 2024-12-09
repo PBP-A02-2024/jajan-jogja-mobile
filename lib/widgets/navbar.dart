@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
 
-Container navbar(context){
+Container navbar(context, page){
   return Container(
     height: 75,
     width: MediaQuery.sizeOf(context).width,
@@ -38,7 +38,9 @@ Container navbar(context){
                   color:  Color(0XFF7A7A7A),
                   size: 24.0,
                 ),
-                onPressed: (){},
+                onPressed: (){
+                  Navigator.pushNamed(context, '/search');
+                },
               ),
               Text("Search", style: TextStyle(color: Color(0XFF7A7A7A)),) 
             ],

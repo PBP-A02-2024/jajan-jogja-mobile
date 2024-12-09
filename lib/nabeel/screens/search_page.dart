@@ -1,26 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:jajan_jogja_mobile/iyan/models/resto.dart';
+import 'package:jajan_jogja_mobile/nabeel/widgets/tempatkuliner_card.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
 import 'package:jajan_jogja_mobile/nabeel/models/search.dart';
 import 'package:jajan_jogja_mobile/widgets/header_app.dart';
 import 'package:jajan_jogja_mobile/widgets/navbar.dart';
+
 class SearchPage extends StatefulWidget {
-  const SearchPage({super.key});
+  final BuildContext context;
+  const SearchPage({super.key, required this.context});
 
   @override
   State<SearchPage> createState() => _SearchPageState();
 }
 
 class _SearchPageState extends State<SearchPage> {
+
   Future<List<Search>> fetchSearch(CookieRequest request) async {
     final response = await request.get('http://localhost:8000/search/show-search-history/');
-    
-    // Melakukan decode response menjadi bentuk json
-    var data = response;
-    
-    // Melakukan konversi data json menjadi object ProductEntry
     List<Search> listSearch = [];
-    for (var d in data) {
+    for (var d in response) {
       if (d != null) {
         listSearch.add(Search.fromJson(d));
       }
@@ -29,16 +29,11 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   Future<List<TempatKuliner>> fetchResto(CookieRequest request) async {
-    final response = await request.get('http://localhost:8000/search/show-search-history/');
-    
-    // Melakukan decode response menjadi bentuk json
-    var data = response;
-    
-    // Melakukan konversi data json menjadi object ProductEntry
-    List<Restaurant> listResto = [];
-    for (var d in data) {
+    final response = await request.get('http://localhost:8000/json-tempat/');
+    List<TempatKuliner> listResto = [];
+    for (var d in response) {
       if (d != null) {
-        listResto.add(Restaurant.fromJson(d));
+        listResto.add(TempatKuliner.fromJson(d));
       }
     }
     return listResto;
@@ -49,64 +44,63 @@ class _SearchPageState extends State<SearchPage> {
     final request = context.watch<CookieRequest>();
     return Scaffold(
       appBar: headerApp(context),
-      bottomNavigationBar: navbar(context),
-      body: FutureBuilder(
-        future: fetchSearch(request),
-        builder: (context, AsyncSnapshot snapshot) {
-          if (snapshot.data == null) {
-            return const Center(child: CircularProgressIndicator());
-          } else {
-            if (!snapshot.hasData) {
-              return const Column(
+      bottomNavigationBar: navbar(context, "search"),
+      body: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(16),
+            child: Center(
+              child: Column(
                 children: [
                   Text(
-                    'Belum ada data product pada Jajan Jogja Mobile',
-                    style: TextStyle(fontSize: 20, color: Color(0xff59A5D8)),
-                  ),
-                  SizedBox(height: 8),
-                ],
-              );
-            } else {
-              return ListView.builder(
-                itemCount: snapshot.data!.length,
-                itemBuilder: (_, index) => new GestureDetector(
-                  // onTap: (){
-                  //   Navigator.push(context, MaterialPageRoute(
-                  //     builder: (context) => ProductDetailPage(product: snapshot.data![index])
-                  //     )
-                  //   );
-                  // },
-                  child: 
-                    Container(
-                    margin:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                    padding: const EdgeInsets.all(20.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "${snapshot.data![index].fields.name}",
-                          style: const TextStyle(
-                            fontSize: 18.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        //!! ganti sesuai
-                        const SizedBox(height: 10),
-                        Text("${snapshot.data![index].fields.price}"),
-                        const SizedBox(height: 10),
-                        Text("${snapshot.data![index].fields.description}"),
-                        const SizedBox(height: 10),
-                        Text("${snapshot.data![index].fields.stock}")
-                      ],
+                    "Discover Jogja's Best Eats",
+                    style: TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.secondary,
                     ),
                   ),
-                )
-              );
-            }
-          }
-        },
+                  const SizedBox(height: 8),
+                  Text(
+                    "Quickly search resto by name, category, or keyword.",
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Theme.of(context).colorScheme.secondary,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                ],
+              ),
+            ),
+          ),
+          Expanded(
+            child: FutureBuilder<List<TempatKuliner>>(
+              future: fetchResto(request),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return Center(child: Text('No data available'));
+                } else {
+                  return GridView.builder(
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 8.0,
+                      mainAxisSpacing: 8.0,
+                    ),
+                    itemCount: snapshot.data!.length,
+                    itemBuilder: (context, index) {
+                      final resto = snapshot.data![index];
+                      return TempatKulinerCard(tempatKuliner: resto);
+                    },
+                  );
+                }
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
