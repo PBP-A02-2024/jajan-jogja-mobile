@@ -24,11 +24,11 @@ class LandingPage extends StatefulWidget {
 }
 
 class LandingPageState extends State<LandingPage> {
-  final List<String> carouselImages = [
-    'https://images.unsplash.com/photo-1524985069026-dd778a71c7b4',
-    'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4',
-    'https://images.unsplash.com/photo-1482049016688-2d3e1b311543',
-  ];
+  // final List<String> carouselImages = [
+  //   'https://images.unsplash.com/photo-1524985069026-dd778a71c7b4',
+  //   'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4',
+  //   'https://images.unsplash.com/photo-1482049016688-2d3e1b311543',
+  // ];
 
   final _commentController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
@@ -47,6 +47,24 @@ class LandingPageState extends State<LandingPage> {
     return listTempatKuliner;
   }
 
+  Future<List<TempatKuliner>> fetchTop5TempatKuliner(CookieRequest request) async {
+    final response = await request.get('http://127.0.0.1:8000/json-tempat/');
+
+    var data = response;
+
+    List<TempatKuliner> listTempatKuliner = [];
+    int x = 0;
+    for (var d in data) {
+      if (d != null) {
+        if (x == 10){
+          break;
+        }
+        listTempatKuliner.add(TempatKuliner.fromJson(d));
+      }
+    }
+    return listTempatKuliner;
+  }
+
   Future<String> fetchUsername(int userId, CookieRequest request) async {
     final response =
         await request.get('http://127.0.0.1:8000/json-user/$userId/');
@@ -59,6 +77,21 @@ class LandingPageState extends State<LandingPage> {
       return username;
     } else {
       throw Exception('Failed to load username');
+    }
+  }
+
+  Future<bool> fetchUser(CookieRequest request) async {
+    final response =
+        await request.get('http://127.0.0.1:8000/json-current-user/');
+
+    if (response != null) {
+      var data = response;
+
+      bool isAdmin = data['is_admin'];
+
+      return isAdmin;
+    } else {
+      throw Exception('Failed to check if current user is admin');
     }
   }
 
@@ -107,13 +140,13 @@ class LandingPageState extends State<LandingPage> {
     return Scaffold(
       appBar: AppBar(
         title: Align(
-          alignment: Alignment.center, // Aligns the title text to the right
+          alignment: Alignment.center,
           child: const Text(
             'Jajan Jogja',
             style: TextStyle(
               color: Color(0xFF7C1D05),
               fontSize: 26,
-            ), // Style the text as needed
+            ),
           ),
         ),
         backgroundColor: const Color(0xFFEBE9E1),
@@ -124,26 +157,39 @@ class LandingPageState extends State<LandingPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              CarouselSlider(
-                options: CarouselOptions(
-                  height: 200.0,
-                  autoPlay: true,
-                  enlargeCenterPage: true,
-                ),
-                items: carouselImages.map((image) {
-                  return Builder(
-                    builder: (BuildContext context) {
-                      return ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: Image.network(
-                          image,
-                          fit: BoxFit.cover,
-                          width: MediaQuery.of(context).size.width,
-                        ),
-                      );
-                    },
-                  );
-                }).toList(),
+              FutureBuilder<List<TempatKuliner>>(
+                future: fetchTop5TempatKuliner(request),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return const Center(child: Text('No restaurant available'));
+                  } else {
+                    return CarouselSlider(
+                      options: CarouselOptions(
+                        height: 200.0,
+                        autoPlay: true,
+                        enlargeCenterPage: true,
+                      ),
+                      items: snapshot.data!.map((image) {
+                        return Builder(
+                          builder: (BuildContext context) {
+                            return ClipRRect(
+                              borderRadius: BorderRadius.circular(12),
+                              child: Image.network(
+                                image.fields.fotoLink,
+                                fit: BoxFit.cover,
+                                width: MediaQuery.of(context).size.width,
+                              ),
+                            );
+                          },
+                        );
+                      }).toList(),
+                    );
+                  }
+                },
               ),
               const SizedBox(height: 24),
               const Text(
