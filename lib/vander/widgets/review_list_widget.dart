@@ -158,10 +158,7 @@ class _ReviewsListWidgetState extends State<ReviewsListWidget> {
             'rating': updatedData['rating'],
             'comment': updatedData['comment'],
           }));
-
       if (response is Map && response['status'] == 'success') {
-        // Optionally, log the response for debugging
-        debugPrint("Update response: $response");
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Review updated successfully.')),
         );

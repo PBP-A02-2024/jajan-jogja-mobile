@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:jajan_jogja_mobile/zoya/screens/landing_page.dart';
+import 'package:jajan_jogja_mobile/marco/screens/restaurant.dart';
 
-Container navbar(context){
+Container navbar(context) {
   return Container(
     height: 75,
     width: MediaQuery.sizeOf(context).width,
@@ -13,74 +14,96 @@ Container navbar(context){
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         Center(
-          child: Column(
-            children:[
-              IconButton(
-                icon: HugeIcon(
-                  icon: HugeIcons.strokeRoundedHome11,
-                  color:  Color(0XFF7A7A7A),
-                  size: 24.0,
-                ),
-                onPressed: () async {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => LandingPage()),
-                  );
-                },
-              ),
-              Text(
-                "Home",
-                style: TextStyle(color: Color(0XFF7A7A7A)),
-              )
-            ]
+            child: Column(children: [
+          IconButton(
+            icon: HugeIcon(
+              icon: HugeIcons.strokeRoundedHome11,
+              color: Color(0XFF7A7A7A),
+              size: 24.0,
+            ),
+            onPressed: () async {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => LandingPage()),
+              );
+            },
+          ),
+          Text(
+            "Home",
+            style: TextStyle(color: Color(0XFF7A7A7A)),
           )
-        ),
+        ])),
         Center(
-          child: Column(
-            children: [
-              IconButton(
-                icon: HugeIcon(
-                  icon: HugeIcons.strokeRoundedSearch01,
-                  color:  Color(0XFF7A7A7A),
-                  size: 24.0,
-                ),
-                onPressed: (){},
-              ),
-              Text("Search", style: TextStyle(color: Color(0XFF7A7A7A)),) 
-            ],
+            child: Column(children: [
+          IconButton(
+            icon: HugeIcon(
+              icon: HugeIcons.strokeRoundedRestaurant02,
+              color: Color(0XFF7A7A7A),
+              size: 24.0,
+            ),
+            onPressed: () async {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => RestaurantPage()),
+              );
+            },
+          ),
+          Text(
+            "Restaurant",
+            style: TextStyle(color: Color(0XFF7A7A7A)),
           )
-        ),
+        ])),
         Center(
-          child: Column(
-            children: [
-              IconButton(
-                icon: HugeIcon(
-                  icon: HugeIcons.strokeRoundedVegetarianFood,
-                  color: Color(0XFF7A7A7A),
-                  size: 24.0,
-                ),
-                onPressed: (){},
+            child: Column(
+          children: [
+            IconButton(
+              icon: HugeIcon(
+                icon: HugeIcons.strokeRoundedSearch01,
+                color: Color(0XFF7A7A7A),
+                size: 24.0,
               ),
-              Text("Food Plans", style: TextStyle(color: Color(0XFF7A7A7A)),) 
-            ],
-          )
-        ),
+              onPressed: () {},
+            ),
+            Text(
+              "Search",
+              style: TextStyle(color: Color(0XFF7A7A7A)),
+            )
+          ],
+        )),
         Center(
-          child: Column(
-            children: [
-              IconButton(
-                icon: HugeIcon(
-                  icon: HugeIcons.strokeRoundedUser,
-                  color: Color(0xFF7A7A7A),
-                  size: 24.0,
-                ),
-                onPressed: (){},
+            child: Column(
+          children: [
+            IconButton(
+              icon: HugeIcon(
+                icon: HugeIcons.strokeRoundedVegetarianFood,
+                color: Color(0XFF7A7A7A),
+                size: 24.0,
               ),
-              Text("Profile", style: TextStyle(color: Color(0XFF7A7A7A)),)
-            ],
-          )
-        ),
+              onPressed: () {},
+            ),
+            Text(
+              "Food Plans",
+              style: TextStyle(color: Color(0XFF7A7A7A)),
+            )
+          ],
+        )),
+        Center(
+            child: Column(
+          children: [
+            IconButton(
+              icon: HugeIcon(
+                icon: HugeIcons.strokeRoundedUser,
+                color: Color(0xFF7A7A7A),
+                size: 24.0,
+              ),
+              onPressed: () {},
+            ),
+            Text(
+              "Profile",
+              style: TextStyle(color: Color(0XFF7A7A7A)),
+            )
+          ],
+        )),
       ],
     ),
   );
