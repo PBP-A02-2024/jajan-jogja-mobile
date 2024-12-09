@@ -106,8 +106,17 @@ class LandingPageState extends State<LandingPage> {
     final request = context.watch<CookieRequest>();
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Jajan Jogja'),
-        backgroundColor: const Color(0xFFE43D12),
+        title: Align(
+          alignment: Alignment.center, // Aligns the title text to the right
+          child: const Text(
+            'Jajan Jogja',
+            style: TextStyle(
+              color: Color(0xFF7C1D05),
+              fontSize: 26,
+            ), // Style the text as needed
+          ),
+        ),
+        backgroundColor: const Color(0xFFEBE9E1),
       ),
       body: SingleChildScrollView(
         child: Padding(

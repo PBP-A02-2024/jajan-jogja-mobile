@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:jajan_jogja_mobile/zoya/screens/landing_page.dart';
-import 'package:jajan_jogja_mobile/marco/screens/restaurant.dart';
 
 Container navbar(context) {
   return Container(
@@ -30,26 +29,6 @@ Container navbar(context) {
           ),
           Text(
             "Home",
-            style: TextStyle(color: Color(0XFF7A7A7A)),
-          )
-        ])),
-        Center(
-            child: Column(children: [
-          IconButton(
-            icon: HugeIcon(
-              icon: HugeIcons.strokeRoundedRestaurant02,
-              color: Color(0XFF7A7A7A),
-              size: 24.0,
-            ),
-            onPressed: () async {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => LandingPage()),
-              );
-            },
-          ),
-          Text(
-            "Restaurant",
             style: TextStyle(color: Color(0XFF7A7A7A)),
           )
         ])),
