@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:jajan_jogja_mobile/marco/models/makanan.dart';
-import 'package:jajan_jogja_mobile/marco/models/restaurant.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
 
+import '../../iyan/models/resto.dart';
 import '../../widgets/navbar.dart';
+import 'package:jajan_jogja_mobile/vander/widgets/review_list_widget.dart';
+import 'package:jajan_jogja_mobile/vander/screens/review_form.dart';
 
 
 class RestaurantPage extends StatefulWidget {
@@ -75,6 +77,31 @@ class _RestaurantPageState extends State<RestaurantPage> {
       return listProduct.first;
     } else {
       throw Exception('No restaurant data found');
+    }
+  }
+
+  final tempatKulinerId = "2dbf8eaa-7533-4047-b420-93b496cd4ca0";
+  final tempatKulinerNama = "NamakuBebas";
+  int _reviewListKey = 0;
+
+  void _goToAddReview() async {
+    // Navigate to ReviewEntryFormPage and wait for the result
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ReviewEntryFormPage(
+          tempatKulinerId: tempatKulinerId,
+          tempatKulinerNama: tempatKulinerNama,
+        ),
+      ),
+    );
+
+    // If a new review was added, trigger a refresh
+    if (result == true) {
+      setState(() {
+        // Increment a key or trigger a rebuild in another way
+        _reviewListKey++;
+      });
     }
   }
 
@@ -333,22 +360,16 @@ class _RestaurantPageState extends State<RestaurantPage> {
                       color: Color(0xFF7C1D05),
                     ),
                   ),
+                  IconButton(
+                    onPressed: _goToAddReview,
+                    icon: const Icon(Icons.add_comment),
+                    color: const Color(0xFFD6536D),
+                    tooltip: "Add Review",
+                  ),
                   const SizedBox(height: 16),
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: const Color(0xFFD6536D), width: 2),
-                      borderRadius: BorderRadius.circular(24),
-                    ),
-                    child: const Center(
-                      child: Text(
-                        'No reviews yet.',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Color(0xFF7A7A7A),
-                        ),
-                      ),
-                    ),
+                  ReviewsListWidget(
+                    theKey: ValueKey(_reviewListKey),
+                    tempatKulinerId: tempatKulinerId,
                   ),
                 ],
               ),
