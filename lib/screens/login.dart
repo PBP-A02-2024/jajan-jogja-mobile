@@ -190,7 +190,7 @@ class _LoginPageState extends State<LoginPage> {
                                     Navigator.pushReplacement(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => RestaurantPage()),
+                                          builder: (context) => RestaurantPage(idTempatKuliner: '26b50e41-06f2-4b8f-b238-e8bb0f93d3d5',)),
                                     );
                                     ScaffoldMessenger.of(context)
                                       ..hideCurrentSnackBar()
