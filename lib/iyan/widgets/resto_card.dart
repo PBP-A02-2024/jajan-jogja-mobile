@@ -27,7 +27,7 @@ class CardTempat extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: SizedBox(
-          width: 278,
+          width: MediaQuery.of(context).size.width * 0.8,
           height: 200,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -35,7 +35,7 @@ class CardTempat extends StatelessWidget {
             children: [
               // Foto resto
               Container(
-                width: 278,
+                width: MediaQuery.of(context).size.width * 0.8,
                 height: 100,
                 decoration: BoxDecoration(
                   color: Colors.grey[200],
@@ -47,7 +47,7 @@ class CardTempat extends StatelessWidget {
                   child: Image.network(
                     fotoLink,
                     fit: BoxFit.cover,
-                    width: 278,
+                    width: MediaQuery.of(context).size.width * 0.8,
                     height: 100,
                   ),
                 ),
