@@ -5,6 +5,21 @@ class CardTempat extends StatelessWidget {
   final TempatKuliner tempatKuliner;
   final VoidCallback onTap;
 
+  Future<List<TempatKuliner>> fetchTempatKuliner(
+    CookieRequest request) async {
+    final response = await request.get('http://127.0.0.1:8000/json-tempat/');
+
+    var data = response;
+
+    List<TempatKuliner> listTempatKuliner = [];
+    for (var d in data) {
+      if (d != null) {
+        listTempatKuliner.add(TempatKuliner.fromJson(d));
+      }
+    }
+    return listTempatKuliner;
+  }
+
   const CardTempat({
     super.key,
     required this.tempatKuliner,
