@@ -10,11 +10,11 @@ class CardTempat extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Mengambil data dari model TempatKuliner
+    final idTempatKuliner = tempatKuliner.pk;
     final nama = tempatKuliner.fields.nama;
     final alamat = tempatKuliner.fields.alamat;
     final rating = double.parse(tempatKuliner.fields.rating);
     final fotoLink = tempatKuliner.fields.fotoLink;
-    final idTempatKuliner = tempatKuliner.pk.toString();
 
     return GestureDetector(
       onTap: () async {
