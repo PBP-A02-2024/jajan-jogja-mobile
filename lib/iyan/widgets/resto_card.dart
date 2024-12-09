@@ -10,6 +10,7 @@ class CardTempat extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Mengambil data dari model TempatKuliner
+    final idTempatKuliner = tempatKuliner.pk;
     final nama = tempatKuliner.fields.nama;
     final alamat = tempatKuliner.fields.alamat;
     final rating = double.parse(tempatKuliner.fields.rating);
@@ -20,7 +21,7 @@ class CardTempat extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => const RestaurantPage()), // blm ke sambung bngt sama marco and specific makanan
+                builder: (context) => const RestaurantPage(idTempatKuliner: idTempatKuliner)), // blm ke sambung bngt sama marco and specific makanan
           );
         },
       child: Padding(
