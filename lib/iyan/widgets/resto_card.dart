@@ -21,7 +21,7 @@ class CardTempat extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => const RestaurantPage(idTempatKuliner: idTempatKuliner)), // blm ke sambung bngt sama marco and specific makanan
+                builder: (context) => RestaurantPage(idTempatKuliner: idTempatKuliner)),
           );
         },
       child: Padding(
