@@ -107,11 +107,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-<<<<<<< HEAD
-  http:
-    dependency: "direct main"
-    description:
-=======
   flutter_web_plugins:
     dependency: transitive
     description: flutter
@@ -126,9 +121,8 @@ packages:
     source: hosted
     version: "6.2.1"
   http:
-    dependency: transitive
+    dependency: "direct main"
     description:
->>>>>>> 552c409df352952e5f844c9b812dc84ec747da5a
       name: http
       sha256: b9c29a161230ee03d3ccf545097fccd9b87a5264228c5d348202e0f0c28f9010
       url: "https://pub.dev"
@@ -138,12 +132,6 @@ packages:
     dependency: transitive
     description:
       name: http_parser
-<<<<<<< HEAD
-      sha256: "76d306a1c3afb33fe82e2bbacad62a61f409b5634c915fceb0d799de1a913360"
-      url: "https://pub.dev"
-    source: hosted
-    version: "4.1.1"
-=======
       sha256: "2aa08ce0341cc9b354a498388e30986515406668dbcc4f7c950c3e715496693b"
       url: "https://pub.dev"
     source: hosted
@@ -164,37 +152,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.18.1"
->>>>>>> 552c409df352952e5f844c9b812dc84ec747da5a
   leak_tracker:
     dependency: transitive
     description:
       name: leak_tracker
-<<<<<<< HEAD
-      sha256: "7bb2830ebd849694d1ec25bf1f44582d6ac531a57a365a803a6034ff751d2d06"
-      url: "https://pub.dev"
-    source: hosted
-    version: "10.0.7"
-=======
       sha256: "3f87a60e8c63aecc975dda1ceedbc8f24de75f09e4856ea27daf8958f2f0ce05"
       url: "https://pub.dev"
     source: hosted
     version: "10.0.5"
->>>>>>> 552c409df352952e5f844c9b812dc84ec747da5a
   leak_tracker_flutter_testing:
     dependency: transitive
     description:
       name: leak_tracker_flutter_testing
-<<<<<<< HEAD
-      sha256: "9491a714cca3667b60b5c420da8217e6de0d1ba7a5ec322fab01758f6998f379"
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.0.8"
-=======
       sha256: "932549fb305594d82d7183ecd9fa93463e9914e1b67cacc34bc40906594a1806"
       url: "https://pub.dev"
     source: hosted
     version: "3.0.5"
->>>>>>> 552c409df352952e5f844c9b812dc84ec747da5a
   leak_tracker_testing:
     dependency: transitive
     description:
@@ -251,8 +224,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.9.0"
-<<<<<<< HEAD
-=======
   path_provider:
     dependency: transitive
     description:
@@ -273,10 +244,10 @@ packages:
     dependency: transitive
     description:
       name: path_provider_foundation
-      sha256: f234384a3fdd67f989b4d54a5d73ca2a6c422fa55ae694381ae0f4375cd1ea16
+      sha256: "4843174df4d288f5e29185bd6e72a6fbdf5a4a4602717eed565497429f179942"
       url: "https://pub.dev"
     source: hosted
-    version: "2.4.0"
+    version: "2.4.1"
   path_provider_linux:
     dependency: transitive
     description:
@@ -325,7 +296,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.8"
->>>>>>> 552c409df352952e5f844c9b812dc84ec747da5a
   provider:
     dependency: "direct main"
     description:
@@ -334,8 +304,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.1.2"
-<<<<<<< HEAD
-=======
   shared_preferences:
     dependency: transitive
     description:
@@ -392,7 +360,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.4.1"
->>>>>>> 552c409df352952e5f844c9b812dc84ec747da5a
   sky_engine:
     dependency: transitive
     description: flutter
@@ -445,11 +412,7 @@ packages:
       sha256: "5b8a98dafc4d5c4c9c72d8b31ab2b23fc13422348d2997120294d3bac86b4ddb"
       url: "https://pub.dev"
     source: hosted
-<<<<<<< HEAD
-    version: "0.7.3"
-=======
     version: "0.7.2"
->>>>>>> 552c409df352952e5f844c9b812dc84ec747da5a
   typed_data:
     dependency: transitive
     description:
@@ -473,11 +436,7 @@ packages:
       sha256: "5c5f338a667b4c644744b661f309fb8080bb94b18a7e91ef1dbd343bed00ed6d"
       url: "https://pub.dev"
     source: hosted
-<<<<<<< HEAD
-    version: "14.3.0"
-=======
     version: "14.2.5"
->>>>>>> 552c409df352952e5f844c9b812dc84ec747da5a
   web:
     dependency: transitive
     description:
@@ -486,11 +445,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.0"
-<<<<<<< HEAD
-sdks:
-  dart: ">=3.6.0-0 <4.0.0"
-  flutter: ">=3.18.0-18.0.pre.54"
-=======
   xdg_directories:
     dependency: transitive
     description:
@@ -500,6 +454,5 @@ sdks:
     source: hosted
     version: "1.1.0"
 sdks:
-  dart: "3.5.4"
+  dart: ">=3.5.4 <4.0.0"
   flutter: ">=3.24.0"
->>>>>>> 552c409df352952e5f844c9b812dc84ec747da5a
