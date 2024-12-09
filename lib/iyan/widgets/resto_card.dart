@@ -1,30 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:jajan_jogja_mobile/iyan/models/resto.dart'; // Import model TempatKuliner
+import 'package:jajan_jogja_mobile/iyan/models/resto.dart';
+import 'package:jajan_jogja_mobile/marco/screens/restaurant.dart'; // Import model TempatKuliner
 
 class CardTempat extends StatelessWidget {
   final TempatKuliner tempatKuliner;
-  final VoidCallback onTap;
 
-  Future<List<TempatKuliner>> fetchTempatKuliner(
-    CookieRequest request) async {
-    final response = await request.get('http://127.0.0.1:8000/json-tempat/');
-
-    var data = response;
-
-    List<TempatKuliner> listTempatKuliner = [];
-    for (var d in data) {
-      if (d != null) {
-        listTempatKuliner.add(TempatKuliner.fromJson(d));
-      }
-    }
-    return listTempatKuliner;
-  }
-
-  const CardTempat({
-    super.key,
-    required this.tempatKuliner,
-    required this.onTap,
-  });
+  const CardTempat(this.tempatKuliner, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +16,13 @@ class CardTempat extends StatelessWidget {
     final fotoLink = tempatKuliner.fields.fotoLink;
 
     return GestureDetector(
-      onTap: onTap, // Fungsi untuk navigasi ke halaman restoPage
+      onTap: () async {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => const RestaurantPage()), // blm ke sambung bngt sama marco and specific makanan
+          );
+        },
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: SizedBox(

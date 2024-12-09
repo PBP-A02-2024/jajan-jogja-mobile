@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:intl/intl.dart';
+import 'package:jajan_jogja_mobile/iyan/models/resto.dart';
+import 'package:jajan_jogja_mobile/iyan/widgets/resto_card.dart';
 import 'package:jajan_jogja_mobile/zoya/models/community_forum_entry.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
@@ -30,6 +32,20 @@ class _LandingPageState extends State<LandingPage> {
 
   final _commentController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+
+  Future<List<TempatKuliner>> fetchTempatKuliner(CookieRequest request) async {
+    final response = await request.get('http://127.0.0.1:8000/json-tempat/');
+
+    var data = response;
+
+    List<TempatKuliner> listTempatKuliner = [];
+    for (var d in data) {
+      if (d != null) {
+        listTempatKuliner.add(TempatKuliner.fromJson(d));
+      }
+    }
+    return listTempatKuliner;
+  }
 
   Future<String> fetchUsername(int userId, CookieRequest request) async {
     final response =
@@ -126,6 +142,32 @@ class _LandingPageState extends State<LandingPage> {
                   color: Color(0xFF7C1D05),
                 ),
                 textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 24),
+              FutureBuilder<List<TempatKuliner>>(
+                future: fetchTempatKuliner(request),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return const Center(child: Text('No restaurant available'));
+                  } else {
+                    return Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: snapshot.data!.map((entry) {
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            child: CardTempat(entry),
+                          );
+                        }).toList(),
+                      ),
+                    );
+                  }
+                },
               ),
               const SizedBox(height: 24),
               const Text(
