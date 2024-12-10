@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jajan_jogja_mobile/iyan/models/resto.dart';
+import 'package:jajan_jogja_mobile/iyan/screens/edit_tempat_kuliner.dart';
 import 'package:jajan_jogja_mobile/marco/screens/restaurant.dart'; // Import model TempatKuliner
 
 class CardTempat extends StatelessWidget {
@@ -115,9 +116,15 @@ class CardTempat extends StatelessWidget {
                                 vertical: 4, horizontal: 8), // Menyesuaikan padding
                             backgroundColor:
                                 Color.fromARGB(255, 237, 178, 60), // Menyesuaikan warna
-                          ),
+                          ),                  
                           onPressed: () {
-                            // To do: buat page edit
+                            // Navigasi ke halaman CreateTempatKuliner
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => EditTempatKuliner(idTempatKuliner: '0', id: 0,),
+                              ),
+                            );
                           },
                           child: Text(
                             'Edit',
