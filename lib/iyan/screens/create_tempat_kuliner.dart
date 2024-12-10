@@ -1,6 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
+import 'package:provider/provider.dart';
 
 class CreateTempatKuliner extends StatefulWidget {
   const CreateTempatKuliner({super.key});
@@ -11,230 +13,212 @@ class CreateTempatKuliner extends StatefulWidget {
 
 class _CreateTempatKulinerState extends State<CreateTempatKuliner> {
   final _formKey = GlobalKey<FormState>();
-  final _namaController = TextEditingController();
-  final _descriptionController = TextEditingController();
-  final _alamatController = TextEditingController();
-  final _longitudeController = TextEditingController();
-  final _latitudeController = TextEditingController();
-  final _jamBukaController = TextEditingController();
-  final _jamTutupController = TextEditingController();
-  final _ratingController = TextEditingController();
-  final _fotoLinkController = TextEditingController();
-  final _variasiController = TextEditingController();
+  String _namaController = '';
+  String _descriptionController = '';
+  String _alamatController = '';
+  String _longitudeController = '';
+  String _latitudeController = '';
+  String _jamBukaController = '';
+  String _jamTutupController = '';
+  String _ratingController = '';
+  String _fotoLinkController = '';
+  List<int> _variasiController = [];
 
   @override
   Widget build(BuildContext context) {
     final request = context.watch<CookieRequest>();
+
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xFFC88709), // Palet warna sesuai
-        title: const Center(
-          child: Text(
-            'Tambah Tempat Kuliner',
-            style: TextStyle(
-              fontFamily: 'Jockey One',
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
+        title: const Center(child: Text('Tambah Tempat Kuliner')),
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        foregroundColor: Colors.white,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Form(
-          key: _formKey,
-          child: ListView(
+      body: Form(
+        key: _formKey,
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Nama
-              TextFormField(
-                controller: _namaController,
-                decoration: InputDecoration(
-                  labelText: 'Nama Tempat',
-                  labelStyle: TextStyle(color: Color(0xFF7C1D04)),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xFF7C1D04)),
-                  ),
-                ),
+              _buildTextField(
+                hintText: "Nama Tempat Kuliner",
+                labelText: "Nama Tempat Kuliner",
+                onChanged: (value) => setState(() {
+                  _namaController = value!;
+                }),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Nama tidak boleh kosong';
+                    return "Nama tempat kuliner tidak boleh kosong!";
                   }
                   return null;
                 },
               ),
-              // Deskripsi
-              TextFormField(
-                controller: _descriptionController,
-                decoration: InputDecoration(
-                  labelText: 'Deskripsi',
-                  labelStyle: TextStyle(color: Color(0xFF7C1D04)),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xFF7C1D04)),
-                  ),
-                ),
+              _buildTextField(
+                hintText: "Deskripsi Tempat Kuliner",
+                labelText: "Deskripsi Tempat Kuliner",
+                onChanged: (value) => setState(() {
+                  _descriptionController = value!;
+                }),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Deskripsi tidak boleh kosong';
+                    return "Deskripsi tidak boleh kosong!";
                   }
                   return null;
                 },
               ),
-              // Alamat
-              TextFormField(
-                controller: _alamatController,
-                decoration: InputDecoration(
-                  labelText: 'Alamat',
-                  labelStyle: TextStyle(color: Color(0xFF7C1D04)),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xFF7C1D04)),
-                  ),
-                ),
+              _buildTextField(
+                hintText: "Alamat Tempat Kuliner",
+                labelText: "Alamat Tempat Kuliner",
+                onChanged: (value) => setState(() {
+                  _alamatController = value!;
+                }),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Alamat tidak boleh kosong';
+                    return "Alamat tidak boleh kosong!";
                   }
                   return null;
                 },
               ),
-              // Longitude
-              TextFormField(
-                controller: _longitudeController,
-                decoration: InputDecoration(
-                  labelText: 'Longitude',
-                  labelStyle: TextStyle(color: Color(0xFF7C1D04)),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xFF7C1D04)),
-                  ),
-                ),
+              _buildTextField(
+                hintText: "Longitude",
+                labelText: "Longitude",
+                onChanged: (value) => setState(() {
+                  _longitudeController = value!;
+                }),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Longitude tidak boleh kosong';
+                    return "Longitude tidak boleh kosong!";
                   }
                   return null;
                 },
               ),
-              // Latitude
-              TextFormField(
-                controller: _latitudeController,
-                decoration: InputDecoration(
-                  labelText: 'Latitude',
-                  labelStyle: TextStyle(color: Color(0xFF7C1D04)),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xFF7C1D04)),
-                  ),
-                ),
+              _buildTextField(
+                hintText: "Latitude",
+                labelText: "Latitude",
+                onChanged: (value) => setState(() {
+                  _latitudeController = value!;
+                }),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Latitude tidak boleh kosong';
+                    return "Latitude tidak boleh kosong!";
                   }
                   return null;
                 },
               ),
-              // Jam Buka
-              TextFormField(
-                controller: _jamBukaController,
-                decoration: InputDecoration(
-                  labelText: 'Jam Buka',
-                  labelStyle: TextStyle(color: Color(0xFF7C1D04)),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xFF7C1D04)),
-                  ),
-                ),
+              _buildTextField(
+                hintText: "Jam Buka",
+                labelText: "Jam Buka",
+                onChanged: (value) => setState(() {
+                  _jamBukaController = value!;
+                }),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Jam buka tidak boleh kosong';
+                    return "Jam buka tidak boleh kosong!";
                   }
                   return null;
                 },
               ),
-              // Jam Tutup
-              TextFormField(
-                controller: _jamTutupController,
-                decoration: InputDecoration(
-                  labelText: 'Jam Tutup',
-                  labelStyle: TextStyle(color: Color(0xFF7C1D04)),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xFF7C1D04)),
-                  ),
-                ),
+              _buildTextField(
+                hintText: "Jam Tutup",
+                labelText: "Jam Tutup",
+                onChanged: (value) => setState(() {
+                  _jamTutupController = value!;
+                }),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Jam tutup tidak boleh kosong';
+                    return "Jam tutup tidak boleh kosong!";
                   }
                   return null;
                 },
               ),
-              // Rating
-              TextFormField(
-                controller: _ratingController,
-                decoration: InputDecoration(
-                  labelText: 'Rating',
-                  labelStyle: TextStyle(color: Color(0xFF7C1D04)),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xFF7C1D04)),
-                  ),
-                ),
+              _buildTextField(
+                hintText: "Rating",
+                labelText: "Rating",
+                onChanged: (value) => setState(() {
+                  _ratingController = value!;
+                }),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Rating tidak boleh kosong';
+                    return "Rating tidak boleh kosong!";
                   }
                   return null;
                 },
               ),
-              // Foto Link
-              TextFormField(
-                controller: _fotoLinkController,
-                decoration: InputDecoration(
-                  labelText: 'Link Foto',
-                  labelStyle: TextStyle(color: Color(0xFF7C1D04)),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xFF7C1D04)),
-                  ),
-                ),
+              _buildTextField(
+                hintText: "Foto Link",
+                labelText: "Foto Link",
+                onChanged: (value) => setState(() {
+                  _fotoLinkController = value!;
+                }),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Link foto tidak boleh kosong';
+                    return "Foto link tidak boleh kosong!";
                   }
                   return null;
                 },
               ),
-              // Variasi
-              TextFormField(
-                controller: _variasiController,
-                decoration: InputDecoration(
-                  labelText: 'Variasi Makanan',
-                  labelStyle: TextStyle(color: Color(0xFF7C1D04)),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xFF7C1D04)),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      if (_formKey.currentState!.validate()) {
+                        final response = await request.postJson(
+                          "http://127.0.0.1:8000/create-tempat-kuliner/",
+                          jsonEncode({
+                            "nama": _namaController,
+                            "description": _descriptionController,
+                            "alamat": _alamatController,
+                            "longitude": _longitudeController,
+                            "latitude": _latitudeController,
+                            "jam_buka": _jamBukaController,
+                            "jam_tutup": _jamTutupController,
+                            "rating": _ratingController,
+                            "foto_link": _fotoLinkController,
+                          }),
+                        );
+                        if (response['status'] == 'success') {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text("Tempat kuliner berhasil ditambahkan!")),
+                          );
+                          Navigator.pop(context);
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text("Terjadi kesalahan, coba lagi.")),
+                          );
+                        }
+                      }
+                    },
+                    child: const Text("Save"),
                   ),
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Variasi makanan tidak boleh kosong';
-                  }
-                  return null;
-                },
-              ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFFC88709), // Warna button sesuai
-                  padding: EdgeInsets.symmetric(vertical: 14),
-                  textStyle: TextStyle(fontSize: 16),
-                ),
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    // Lakukan aksi jika form valid
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Data berhasil disimpan')),
-                    );
-                    // Logic untuk menyimpan data
-                  }
-                },
-                child: Text('Simpan'),
               ),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Padding _buildTextField({
+    required String hintText,
+    required String labelText,
+    required Function(String?) onChanged,
+    required String? Function(String?) validator,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: TextFormField(
+        decoration: InputDecoration(
+          hintText: hintText,
+          labelText: labelText,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(5.0),
+          ),
+        ),
+        onChanged: onChanged,
+        validator: validator,
       ),
     );
   }
