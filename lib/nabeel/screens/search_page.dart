@@ -372,7 +372,7 @@ class _SearchPageState extends State<SearchPage> {
                     ElevatedButton(
                       onPressed: () async {
                         _searchNama = _searchController.text;
-                        final response = await request.postJson(
+                        await request.postJson(
                           "http://127.0.0.1:8000/search/create-search/",
                           jsonEncode(<String, String>{
                             'content': _searchNama,

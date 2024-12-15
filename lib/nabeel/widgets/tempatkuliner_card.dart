@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jajan_jogja_mobile/iyan/models/resto.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:jajan_jogja_mobile/marco/screens/restaurant.dart';
 
 class TempatKulinerCard extends StatelessWidget {
   final TempatKuliner tempatKuliner;
@@ -15,7 +16,7 @@ class TempatKulinerCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(context, url);
+        Navigator.push(context, MaterialPageRoute(builder: (context) => RestaurantPage(idTempatKuliner: tempatKuliner.pk)));
       },
       child: Container(
         width: double.infinity,
