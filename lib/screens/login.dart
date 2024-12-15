@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:jajan_jogja_mobile/widgets/header_app.dart';
 import 'package:jajan_jogja_mobile/zoya/screens/landing_page.dart';
 import 'package:jajan_jogja_mobile/screens/register.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
@@ -42,6 +43,7 @@ class _LoginPageState extends State<LoginPage> {
     final theme = Theme.of(context);
 
     return Scaffold(
+      appBar: headerApp(context),
       backgroundColor: const Color(0xFFEBE9E1), // Background color
       body: SingleChildScrollView(
         child: Center(

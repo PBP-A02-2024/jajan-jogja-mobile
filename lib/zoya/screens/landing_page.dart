@@ -358,7 +358,7 @@ class LandingPageState extends State<LandingPage> {
           ),
         ),
       ),
-      bottomNavigationBar: navbar(context),
+      bottomNavigationBar: navbar(context, "home"),
     );
   }
 }
