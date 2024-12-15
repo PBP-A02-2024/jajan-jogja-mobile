@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:jajan_jogja_mobile/nabeel/screens/search_page.dart';
+import 'package:jajan_jogja_mobile/zoya/screens/landing_page.dart';
 
 Container navbar(context, page){
   return Container(
@@ -12,70 +14,79 @@ Container navbar(context, page){
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         Center(
-          child: Column(
-            children:[
-              IconButton(
-                icon: HugeIcon(
-                  icon: HugeIcons.strokeRoundedHome11,
-                  color:  Color(0XFF7A7A7A),
-                  size: 24.0,
-                ),
-                onPressed: (){},
-              ),
-              Text(
-                "Home",
-                style: TextStyle(color: Color(0XFF7A7A7A)),
-              )
-            ]
+            child: Column(children: [
+          IconButton(
+            icon: HugeIcon(
+              icon: HugeIcons.strokeRoundedHome11,
+              color: page != "home"? Color(0XFF7A7A7A):Color(0xFFc98809),
+              size: 24.0,
+            ),
+            onPressed: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => LandingPage()),
+              );
+            },
+          ),
+          Text(
+            "Home",
+            style: TextStyle(color: page != "home"? Color(0XFF7A7A7A):Color(0xFFc98809)),
           )
-        ),
+        ])),
         Center(
           child: Column(
             children: [
               IconButton(
                 icon: HugeIcon(
                   icon: HugeIcons.strokeRoundedSearch01,
-                  color:  Color(0XFF7A7A7A),
+                  color: page != "search"? Color(0XFF7A7A7A):Color(0xFFc98809),
                   size: 24.0,
                 ),
                 onPressed: (){
-                  Navigator.pushNamed(context, '/search');
+                  Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SearchPage()),
+              );
                 },
               ),
-              Text("Search", style: TextStyle(color: Color(0XFF7A7A7A)),) 
+              Text("Search", style: TextStyle(color:page != "search"? Color(0XFF7A7A7A):Color(0xFFc98809)),) 
             ],
           )
         ),
         Center(
-          child: Column(
-            children: [
-              IconButton(
-                icon: HugeIcon(
-                  icon: HugeIcons.strokeRoundedVegetarianFood,
-                  color: Color(0XFF7A7A7A),
-                  size: 24.0,
-                ),
-                onPressed: (){},
+            child: Column(
+          children: [
+            IconButton(
+              icon: HugeIcon(
+                icon: HugeIcons.strokeRoundedVegetarianFood,
+                color: page != "food plans"? Color(0XFF7A7A7A):Color(0xFFc98809),
+                size: 24.0,
               ),
-              Text("Food Plans", style: TextStyle(color: Color(0XFF7A7A7A)),) 
-            ],
-          )
-        ),
+              onPressed: () {},
+            ),
+            Text(
+              "Food Plans",
+              style: TextStyle(color: page != "food plans"? Color(0XFF7A7A7A):Color(0xFFc98809)),
+            )
+          ],
+        )),
         Center(
-          child: Column(
-            children: [
-              IconButton(
-                icon: HugeIcon(
-                  icon: HugeIcons.strokeRoundedUser,
-                  color: Color(0xFF7A7A7A),
-                  size: 24.0,
-                ),
-                onPressed: (){},
+            child: Column(
+          children: [
+            IconButton(
+              icon: HugeIcon(
+                icon: HugeIcons.strokeRoundedUser,
+                color: page != "profile"? Color(0XFF7A7A7A):Color(0xFFc98809),
+                size: 24.0,
               ),
-              Text("Profile", style: TextStyle(color: Color(0XFF7A7A7A)),)
-            ],
-          )
-        ),
+              onPressed: () {},
+            ),
+            Text(
+              "Profile",
+              style: TextStyle(color: page != "profile"? Color(0XFF7A7A7A):Color(0xFFc98809)),
+            )
+          ],
+        )),
       ],
     ),
   );

@@ -48,10 +48,6 @@ class MyApp extends StatelessWidget {
           ),
         ),
         home: LoginPage(),
-        initialRoute: '/',
-        routes: {
-          '/search': (context) => SearchPage(context: context),
-        }, 
       ),
     );
   }
