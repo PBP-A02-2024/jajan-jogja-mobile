@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:jajan_jogja_mobile/nabeel/screens/search_page.dart';
 import 'package:jajan_jogja_mobile/screens/login.dart';
 import 'package:provider/provider.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
