@@ -49,7 +49,7 @@ class MyApp extends StatelessWidget {
             textTheme: ButtonTextTheme.primary,
           ),
         ),
-        home: RegisterPage(), // Set RegisterPage as home
+        home: LoginPage(),
       ),
     );
   }

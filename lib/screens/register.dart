@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:jajan_jogja_mobile/screens/login.dart';
+import 'package:jajan_jogja_mobile/widgets/header_app.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
 
@@ -23,6 +24,7 @@ class _RegisterPageState extends State<RegisterPage>  {
   Widget build(BuildContext context) {
     final request = context.watch<CookieRequest>();
     return Scaffold(
+      appBar: headerApp(context),
       backgroundColor: const Color(0xFFEBE9E1), // White background
       body: SingleChildScrollView(
         child: Center(
