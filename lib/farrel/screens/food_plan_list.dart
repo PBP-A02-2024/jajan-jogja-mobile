@@ -1,81 +1,147 @@
 import 'package:flutter/material.dart';
-import 'package:jajan_jogja_mobile/widgets/navbar.dart';
 import 'package:jajan_jogja_mobile/widgets/header_app.dart';
+import 'package:jajan_jogja_mobile/widgets/navbar.dart';
+import 'package:pbp_django_auth/pbp_django_auth.dart';
+import 'package:provider/provider.dart';
+import 'package:jajan_jogja_mobile/farrel/models/food_plan_model.dart';
 import 'package:jajan_jogja_mobile/farrel/widgets/food_plan_card.dart';
 import 'package:jajan_jogja_mobile/farrel/screens/food_plans.dart';
 
-class FoodPlanList extends StatelessWidget {
+class FoodPlanList extends StatefulWidget {
   const FoodPlanList({Key? key}) : super(key: key);
 
   @override
+  State<FoodPlanList> createState() => _FoodPlanListState();
+}
+
+class _FoodPlanListState extends State<FoodPlanList> {
+  late Future<List<FoodPlan>> futureFoodPlans;
+
+  @override
+  void initState() {
+    super.initState();
+    final request = context.read<CookieRequest>();
+    futureFoodPlans = fetchFoodPlans(request);
+  }
+
+  Future<List<FoodPlan>> fetchFoodPlans(CookieRequest request) async {
+    final response =
+        await request.get('http://127.0.0.1:8000/food_plans/food_plan_json/');
+
+    if (response != null) {
+      List<FoodPlan> foodPlans = [];
+      for (var d in response) {
+        if (d != null) {
+          foodPlans.add(FoodPlan.fromJson(d));
+        }
+      }
+      return foodPlans;
+    } else {
+      throw Exception('Failed to load food plans');
+    }
+  }
+
+  Future<String> createFoodPlan(CookieRequest request) async {
+    final response = await request.post(
+      'http://127.0.0.1:8000/food_plans/food_plan_create_json/',
+      {},
+    );
+
+    if (response != null && response['food_plan_id'] != null) {
+      return response['food_plan_id'];
+    } else {
+      throw Exception('Failed to create food plan: Invalid response format');
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final List<Map<String, String>> foodPlans = [
-      {'title': 'Nama Itinerary 1', 'distance': 'Jarak Antar Lokasi: 5.4 km'},
-      {'title': 'Nama Itinerary 2', 'distance': 'Jarak Antar Lokasi: 3.2 km'},
-      {'title': 'Nama Itinerary 3', 'distance': 'Jarak Antar Lokasi: 8.7 km'},
-    ];
+    final request = context.watch<CookieRequest>();
 
     return Scaffold(
       backgroundColor: const Color(0xFFEBE9E1),
       appBar: headerApp(context),
-      bottomNavigationBar: navbar(context),
+      bottomNavigationBar: navbar(context, 'food plans'),
       body: Column(
         children: [
-          // Page Title
-          const Padding(
+          Padding(
             padding: EdgeInsets.all(16.0),
             child: Text(
               'Food Plan List',
               style: TextStyle(
-                fontSize: 24.0,
+                fontSize: 36.0,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF944434), // Dark brown color
+                color: Theme.of(context).colorScheme.secondary,
               ),
             ),
           ),
-          // "Create New Food Plans" Button
+          // Add New Food Plan Button
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: ElevatedButton(
-              onPressed: () {
-                // Add functionality to navigate or create a new food plan
-              },
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFFFA726), // Orange button color
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-                padding: const EdgeInsets.symmetric(vertical: 12.0),
-              ),
-              child: const Text(
-                'Create New Food Plans',
-                style: TextStyle(
-                  fontSize: 16.0,
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
+                backgroundColor: const Color(0xFFEBE9E1),
+                foregroundColor: Theme.of(context).colorScheme.secondary,
+                minimumSize: const Size.fromHeight(40),
+                side: BorderSide(
+                  color: Theme.of(context).colorScheme.secondary,
+                  width: 2,
                 ),
               ),
+              onPressed: () async {
+                try {
+                  final pk = await createFoodPlan(request);
+                  if (!mounted) return;
+
+                  // Refresh food plans list
+                  setState(() {
+                    futureFoodPlans = fetchFoodPlans(request);
+                  });
+
+                  // Navigate to new food plan
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => FoodPlans(planId: pk),
+                    ),
+                  );
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Error: $e')),
+                  );
+                }
+              },
+              child: const Text('Add New Food Plan'),
             ),
           ),
-          const SizedBox(height: 16.0),
-          // Food Plan List
+          const SizedBox(height: 16),
           Expanded(
-            child: ListView.builder(
-              itemCount: foodPlans.length,
-              itemBuilder: (context, index) {
-                final plan = foodPlans[index];
-                return FoodPlanCard(
-                  title: plan['title']!,
-                  distance: plan['distance']!,
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => FoodPlans(),
-                      ),
-                    );
-                  },
-                );
+            child: FutureBuilder<List<FoodPlan>>(
+              future: futureFoodPlans,
+              builder: (context, AsyncSnapshot<List<FoodPlan>> snapshot) {
+                if (snapshot.hasData) {
+                  return ListView.builder(
+                    itemCount: snapshot.data!.length,
+                    itemBuilder: (context, index) {
+                      return FoodPlanCard(
+                        title: snapshot.data![index].fields.nama,
+                        distance: 'Food Plan ID: ${snapshot.data![index].pk}'
+                            .substring(0, 20),
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => FoodPlans(
+                              planId: snapshot.data![index].pk,
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('${snapshot.error}'));
+                }
+                return const Center(child: CircularProgressIndicator());
               },
             ),
           ),

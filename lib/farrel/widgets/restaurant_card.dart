@@ -21,7 +21,7 @@ class RestaurantCard extends StatelessWidget {
       margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: const Color(0xFFEBE9E1),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.orange, width: 2),
         boxShadow: [
@@ -59,7 +59,7 @@ class RestaurantCard extends StatelessWidget {
           ),
           SizedBox(height: 16),
           SizedBox(
-            height: 250, // Adjust height based on FoodCard
+            height: 250,
             child: ListView.builder(
                 scrollDirection: Axis.horizontal,
                 itemCount: foods.length,
@@ -69,7 +69,7 @@ class RestaurantCard extends StatelessWidget {
                     name: food['name'] ?? 'Unknown',
                     description:
                         food['description'] ?? 'No description available',
-                    price: food['price'] ?? '0.00',
+                    price: food['price'] ?? '0',
                     imageUrl:
                         food['imageUrl'] ?? 'https://via.placeholder.com/150',
                   );

@@ -86,7 +86,7 @@ class FoodCard extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
             child: Text(
-              'IDR $price',
+              'Rp ${price}',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 color: Theme.of(context).colorScheme.secondary,
