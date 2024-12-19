@@ -4,7 +4,6 @@
 
 import 'dart:convert';
 import 'package:jajan_jogja_mobile/iyan/models/resto.dart';
-import 'package:jajan_jogja_mobile/marco/models/makanan.dart';
 
 List<FoodPlan> foodPlanFromJson(String str) =>
     List<FoodPlan>.from(json.decode(str).map((x) => FoodPlan.fromJson(x)));

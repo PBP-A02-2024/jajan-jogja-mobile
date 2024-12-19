@@ -1,3 +1,4 @@
+// food_card.dart
 import 'package:flutter/material.dart';
 
 class FoodCard extends StatelessWidget {
@@ -16,7 +17,6 @@ class FoodCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('Building FoodCard for $name');
     return Container(
       width: 150, // Adjust as needed
       margin: const EdgeInsets.only(right: 16),
@@ -74,8 +74,8 @@ class FoodCard extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: Text(
               description,
-              style: TextStyle(
-                color: Colors.grey, // Changed to non-const
+              style: const TextStyle(
+                color: Colors.grey,
               ),
               overflow: TextOverflow.ellipsis,
               maxLines: 2,
@@ -86,7 +86,7 @@ class FoodCard extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
             child: Text(
-              'Rp ${price}',
+              'Rp $price',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 color: Theme.of(context).colorScheme.secondary,
