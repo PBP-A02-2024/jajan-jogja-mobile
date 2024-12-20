@@ -234,12 +234,13 @@ class _FoodPlansState extends State<FoodPlans> {
             return SingleChildScrollView(
               child: Column(
                 children: [
-                  // Title with Edit Title Button (Split into row)
+                  // Title with Edit Title and Toggle Item Editing Buttons
                   Padding(
                     padding: const EdgeInsets.symmetric(
                         vertical: 16.0, horizontal: 16.0),
                     child: Column(
                       children: [
+                        // Food Plan Title
                         Row(
                           children: [
                             Expanded(
@@ -257,6 +258,7 @@ class _FoodPlansState extends State<FoodPlans> {
                           ],
                         ),
                         const SizedBox(height: 16),
+                        // Buttons Row: Edit Title and Toggle Item Editing
                         Row(
                           children: [
                             Expanded(
@@ -307,8 +309,9 @@ class _FoodPlansState extends State<FoodPlans> {
                                                 if (!context.mounted) return;
 
                                                 if (success) {
-                                                  Navigator.of(context).pop();
-                                                  // Refresh the page
+                                                  Navigator.of(context)
+                                                      .pop(); // Close dialog
+                                                  // Notify parent about the update if needed
                                                   setState(() {
                                                     futurePlanDetails =
                                                         fetchAllData(request);
@@ -320,7 +323,8 @@ class _FoodPlansState extends State<FoodPlans> {
                                                             'Title updated successfully')),
                                                   );
                                                 } else {
-                                                  Navigator.of(context).pop();
+                                                  Navigator.of(context)
+                                                      .pop(); // Close dialog
                                                   ScaffoldMessenger.of(context)
                                                       .showSnackBar(
                                                     const SnackBar(
@@ -329,7 +333,8 @@ class _FoodPlansState extends State<FoodPlans> {
                                                   );
                                                 }
                                               } catch (e) {
-                                                Navigator.of(context).pop();
+                                                Navigator.of(context)
+                                                    .pop(); // Close dialog
                                                 ScaffoldMessenger.of(context)
                                                     .showSnackBar(
                                                   SnackBar(
@@ -381,14 +386,13 @@ class _FoodPlansState extends State<FoodPlans> {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 8),
                   // Delete Food Plan Button
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.redAccent,
-                        foregroundColor: Color(0xFFEBE9E1),
+                        foregroundColor: const Color(0xFFEBE9E1),
                         side: const BorderSide(
                           color: Colors.red,
                           width: 2,
@@ -414,12 +418,13 @@ class _FoodPlansState extends State<FoodPlans> {
                                     style: TextStyle(color: Colors.red),
                                   ),
                                   onPressed: () async {
-                                    Navigator.of(context).pop();
+                                    Navigator.of(context).pop(); // Close dialog
                                     try {
                                       final success =
                                           await deleteFoodPlan(request);
                                       if (success) {
-                                        Navigator.of(context).pop(); // Go back
+                                        Navigator.of(context).pop(
+                                            true); // Pass back deletion status
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(
                                           const SnackBar(
@@ -464,7 +469,7 @@ class _FoodPlansState extends State<FoodPlans> {
                         distance: 0.0,
                         foods: foods
                             .map((food) => {
-                                  'pk': food.pk, // Ensure 'pk' is included
+                                  'pk': food.pk,
                                   'name': food.fields.nama,
                                   'description': food.fields.description,
                                   'price': food.fields.harga.toString(),

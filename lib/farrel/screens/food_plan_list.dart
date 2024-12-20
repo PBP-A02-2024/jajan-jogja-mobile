@@ -80,8 +80,9 @@ class _FoodPlanListState extends State<FoodPlanList> {
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFEBE9E1),
-                foregroundColor: Theme.of(context).colorScheme.secondary,
+                // backgroundColor: const Color(0xFFEBE9E1),
+                backgroundColor: Theme.of(context).colorScheme.secondary,
+                foregroundColor: const Color(0xFFEBE9E1),
                 minimumSize: const Size.fromHeight(40),
                 side: BorderSide(
                   color: Theme.of(context).colorScheme.secondary,
@@ -98,13 +99,24 @@ class _FoodPlanListState extends State<FoodPlanList> {
                     futureFoodPlans = fetchFoodPlans(request);
                   });
 
-                  // Navigate to new food plan
-                  Navigator.push(
+                  // Navigate to new food plan and await result
+                  final result = await Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => FoodPlans(planId: pk),
                     ),
                   );
+
+                  // If a food plan was deleted, refresh the list
+                  if (result == true) {
+                    setState(() {
+                      futureFoodPlans = fetchFoodPlans(request);
+                    });
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                          content: Text('Food Plan deleted successfully')),
+                    );
+                  }
                 } catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('Error: $e')),
@@ -125,16 +137,29 @@ class _FoodPlanListState extends State<FoodPlanList> {
                     itemBuilder: (context, index) {
                       return FoodPlanCard(
                         title: snapshot.data![index].fields.nama,
-                        distance: 'Food Plan ID: ${snapshot.data![index].pk}'
-                            .substring(0, 20),
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => FoodPlans(
-                              planId: snapshot.data![index].pk,
+                        onTap: () async {
+                          // Navigate to FoodPlans and await result
+                          final result = await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => FoodPlans(
+                                planId: snapshot.data![index].pk,
+                              ),
                             ),
-                          ),
-                        ),
+                          );
+
+                          // If a food plan was deleted, refresh the list
+                          if (result == true) {
+                            setState(() {
+                              futureFoodPlans = fetchFoodPlans(request);
+                            });
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content:
+                                      Text('Food Plan deleted successfully')),
+                            );
+                          }
+                        },
                       );
                     },
                   );

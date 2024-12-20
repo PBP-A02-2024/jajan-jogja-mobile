@@ -1,4 +1,3 @@
-// restaurant_card.dart
 import 'package:flutter/material.dart';
 import 'package:jajan_jogja_mobile/farrel/widgets/food_card.dart';
 
@@ -48,7 +47,6 @@ class RestaurantCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Restaurant Details with GestureDetector
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -82,7 +80,7 @@ class RestaurantCard extends StatelessWidget {
               ),
               if (isEditingItems)
                 IconButton(
-                  padding: EdgeInsets.zero, // Optional: Remove default padding
+                  padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(),
                   icon: const Icon(Icons.delete, color: Colors.red),
                   onPressed: () {
@@ -105,7 +103,7 @@ class RestaurantCard extends StatelessWidget {
                               ),
                               onPressed: () {
                                 Navigator.of(context).pop();
-                                onDeleteRestaurant(restaurantPk); // Pass the pk
+                                onDeleteRestaurant(restaurantPk);
                               },
                             ),
                           ],
@@ -150,7 +148,7 @@ class RestaurantCard extends StatelessWidget {
                         top: 0,
                         right: 0,
                         child: IconButton(
-                          padding: EdgeInsets.zero, // Optional: Remove padding
+                          padding: EdgeInsets.zero,
                           constraints: const BoxConstraints(),
                           icon: const Icon(Icons.delete, color: Colors.red),
                           onPressed: () {

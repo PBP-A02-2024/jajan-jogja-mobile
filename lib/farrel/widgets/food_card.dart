@@ -1,4 +1,3 @@
-// food_card.dart
 import 'package:flutter/material.dart';
 
 class FoodCard extends StatelessWidget {

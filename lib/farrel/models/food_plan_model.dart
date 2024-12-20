@@ -96,6 +96,6 @@ class DetailedFields {
   factory DetailedFields.fromJson(Map<String, dynamic> json) => DetailedFields(
         user: json["user"],
         nama: json["nama"],
-        restaurants: [], // Populate this based on tempat_kuliner IDs
+        restaurants: [],
       );
 }
