@@ -122,7 +122,7 @@ class CardTempat extends StatelessWidget {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => EditTempatKuliner(idTempatKuliner: '0', id: 0,),
+                                builder: (context) => EditTempatKuliner(id: 0),
                               ),
                             );
                           },
