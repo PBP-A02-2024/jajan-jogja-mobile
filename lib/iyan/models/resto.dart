@@ -42,7 +42,7 @@ class Fields {
     String jamTutup;
     String rating;
     String fotoLink;
-    List<String> variasi;
+    List<int> variasi;
 
     Fields({
         required this.nama,
@@ -67,7 +67,7 @@ class Fields {
         jamTutup: json["jamTutup"],
         rating: json["rating"],
         fotoLink: json["foto_link"],
-        variasi: List<String>.from(json["variasi"].map((x) => x)),
+        variasi: List<int>.from(json["variasi"].map((x) => x)),
     );
 
     Map<String, dynamic> toJson() => {
