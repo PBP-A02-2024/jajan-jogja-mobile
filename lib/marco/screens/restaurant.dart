@@ -378,7 +378,7 @@ class _RestaurantPageState extends State<RestaurantPage> {
         },
       ),
 
-      bottomNavigationBar: navbar(context),
+      bottomNavigationBar: navbar(context, ""),
     );
   }
 }
