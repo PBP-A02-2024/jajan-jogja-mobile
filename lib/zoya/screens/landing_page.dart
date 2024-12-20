@@ -229,19 +229,19 @@ class LandingPageState extends State<LandingPage> {
                     return Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: snapshot.data!.map((entry) {
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: CardTempat(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: snapshot.data!.map((entry) {
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            child: CardTempat(
                             entry,
                             isAdmin: isAdmin,
-                            request: request, // Tambahkan request dari Provider
+                            request: request, 
                             onDelete: () => setState(() {}), // Callback untuk refresh data
                           ),
-                        );
-                      }).toList(),
-                    ),
+                          );
+                        }).toList(),
+                      ),
                     );
                   }
                 },
@@ -471,6 +471,43 @@ class LandingPageState extends State<LandingPage> {
         ),
       ),
       bottomNavigationBar: navbar(context, "home"),
-    );
+      // Menambahkan tombol Add di pojok kanan bawah
+      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+      floatingActionButton: isAdmin
+          ? Padding(
+              padding: const EdgeInsets.only(bottom: 70), // Menyesuaikan jarak dari navbar
+              child: FloatingActionButton(
+                onPressed: () {
+                  // Navigasi ke halaman CreateTempatKuliner
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const CreateTempatKuliner(),
+                    ),
+                  );
+                },
+                backgroundColor: const Color.fromARGB(255, 237, 178, 60),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [
+                    Icon(
+                      Icons.add,
+                      color: Color.fromARGB(255, 151, 103, 0),
+                      size: 24,
+                    ),
+                    SizedBox(height: 4),
+                    Text(
+                      'Restoran',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Color.fromARGB(255, 151, 103, 0),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            )
+            : const SizedBox(), // Tidak menampilkan tombol jika bukan admin
+      );
+    }
   }
-}
