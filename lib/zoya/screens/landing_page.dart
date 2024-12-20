@@ -229,14 +229,19 @@ class LandingPageState extends State<LandingPage> {
                     return Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: snapshot.data!.map((entry) {
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 8.0),
-                            child: CardTempat(entry, isAdmin: isAdmin,), //TODO: GIMANA CARA FUTURE BUILDER
-                          );
-                        }).toList(),
-                      ),
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: snapshot.data!.map((entry) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: CardTempat(
+                            entry,
+                            isAdmin: isAdmin,
+                            request: request, // Tambahkan request dari Provider
+                            onDelete: () => setState(() {}), // Callback untuk refresh data
+                          ),
+                        );
+                      }).toList(),
+                    ),
                     );
                   }
                 },

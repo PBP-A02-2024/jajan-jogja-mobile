@@ -4,7 +4,7 @@ import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
 
 class EditTempatKuliner extends StatefulWidget {
-  final int id; // ID tempat kuliner yang akan diedit
+  final String id; // ID tempat kuliner yang akan diedit sebagai UUID (String)
   const EditTempatKuliner({super.key, required this.id});
 
   @override
@@ -17,29 +17,28 @@ class _EditTempatKulinerState extends State<EditTempatKuliner> {
   TextEditingController _descriptionController = TextEditingController();
   TextEditingController _alamatController = TextEditingController();
   TextEditingController _fotoLinkController = TextEditingController();
-  int _longitudeController = 0;
-  int _latitudeController = 0;
+  double _longitudeController = 0.0;
+  double _latitudeController = 0.0;
   TimeOfDay _jamBukaController = TimeOfDay(hour: 9, minute: 0);
   TimeOfDay _jamTutupController = TimeOfDay(hour: 21, minute: 0);
   List<int> _variasiController = [];
-  List<String> _variasiOptions = ["Variasi 1", "Variasi 2", "Variasi 3"]; // contoh variasi
 
-  // Fungsi untuk mengambil data tempat kuliner dari API berdasarkan ID
+  // Fungsi untuk mengambil data tempat kuliner dari API berdasarkan UUID
   Future<void> _getTempatKuliner() async {
     final request = context.watch<CookieRequest>();
     final response = await request.get(
-      'http://127.0.0.1:8000/tempat-kuliner/${widget.id}/', // endpoint untuk mengambil data tempat kuliner berdasarkan ID
+      'http://127.0.0.1:8000/tempat-kuliner/${widget.id}/', // endpoint untuk mengambil data tempat kuliner berdasarkan UUID
     );
+
     if (response['status'] == 'success') {
       setState(() {
-        // Mengisi data yang ada ke dalam controller
         _namaController.text = response['data']['nama'];
         _descriptionController.text = response['data']['description'];
         _alamatController.text = response['data']['alamat'];
-        _longitudeController = response['data']['longitude'];
-        _latitudeController = response['data']['latitude'];
+        _longitudeController = response['data']['longitude'] ?? 0.0;
+        _latitudeController = response['data']['latitude'] ?? 0.0;
         _fotoLinkController.text = response['data']['foto_link'];
-        _variasiController = List<int>.from(response['data']['variasi']);
+        _variasiController = List<int>.from(response['data']['variasi'] ?? []);
         _jamBukaController = TimeOfDay(
           hour: int.parse(response['data']['jam_buka'].split(':')[0]),
           minute: int.parse(response['data']['jam_buka'].split(':')[1]),
@@ -148,7 +147,7 @@ class _EditTempatKulinerState extends State<EditTempatKuliner> {
                 labelText: "Longitude",
                 initialValue: _longitudeController.toString(),
                 onChanged: (value) => setState(() {
-                  _longitudeController = int.tryParse(value!) ?? 0;
+                  _longitudeController = double.tryParse(value!) ?? 0.0;
                 }),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -162,7 +161,7 @@ class _EditTempatKulinerState extends State<EditTempatKuliner> {
                 labelText: "Latitude",
                 initialValue: _latitudeController.toString(),
                 onChanged: (value) => setState(() {
-                  _latitudeController = int.tryParse(value!) ?? 0;
+                  _latitudeController = double.tryParse(value!) ?? 0.0;
                 }),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -197,7 +196,6 @@ class _EditTempatKulinerState extends State<EditTempatKuliner> {
                   return null;
                 },
               ),
-              _buildVariationDropdown(),
               Align(
                 alignment: Alignment.bottomCenter,
                 child: Padding(
@@ -310,27 +308,4 @@ class _EditTempatKulinerState extends State<EditTempatKuliner> {
     }
   }
 
-  Padding _buildVariationDropdown() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: DropdownButtonFormField<int>(
-        value: _variasiController.isNotEmpty ? _variasiController[0] : null,
-        onChanged: (value) {
-          setState(() {
-            _variasiController = value != null ? [value] : [];
-          });
-        },
-        decoration: InputDecoration(
-          labelText: "Pilih Variasi",
-          border: OutlineInputBorder(),
-        ),
-        items: _variasiOptions
-            .map((variasi) => DropdownMenuItem<int>(
-                  value: int.parse(variasi),
-                  child: Text(variasi),
-                ))
-            .toList(),
-      ),
-    );
-  }
 }
