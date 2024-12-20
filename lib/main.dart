@@ -46,7 +46,7 @@ class MyApp extends StatelessWidget {
             textTheme: ButtonTextTheme.primary,
           ),
         ),
-        home: LoginPage(), // Set RegisterPage as home
+        home: LoginPage(),
       ),
     );
   }
