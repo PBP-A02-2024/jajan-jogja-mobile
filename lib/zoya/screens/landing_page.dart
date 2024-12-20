@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -5,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:jajan_jogja_mobile/iyan/models/resto.dart';
 import 'package:jajan_jogja_mobile/iyan/widgets/resto_card.dart';
 import 'package:jajan_jogja_mobile/zoya/models/community_forum_entry.dart';
+import 'package:jajan_jogja_mobile/zoya/screens/edit_forum.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
 import '../../widgets/navbar.dart';
@@ -24,14 +26,15 @@ class LandingPage extends StatefulWidget {
 }
 
 class LandingPageState extends State<LandingPage> {
-  // final List<String> carouselImages = [
-  //   'https://images.unsplash.com/photo-1524985069026-dd778a71c7b4',
-  //   'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4',
-  //   'https://images.unsplash.com/photo-1482049016688-2d3e1b311543',
-  // ];
-
   final _commentController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+
+  @override
+  void initState(){
+    super.initState();
+
+    setState(() {});
+  }
 
   Future<List<TempatKuliner>> fetchTempatKuliner(CookieRequest request) async {
     final response = await request.get('http://127.0.0.1:8000/json-tempat/');
@@ -47,7 +50,8 @@ class LandingPageState extends State<LandingPage> {
     return listTempatKuliner;
   }
 
-  Future<List<TempatKuliner>> fetchTop5TempatKuliner(CookieRequest request) async {
+  Future<List<TempatKuliner>> fetchTop5TempatKuliner(
+      CookieRequest request) async {
     final response = await request.get('http://127.0.0.1:8000/json-tempat/');
 
     var data = response;
@@ -56,7 +60,7 @@ class LandingPageState extends State<LandingPage> {
     int x = 0;
     for (var d in data) {
       if (d != null) {
-        if (x == 10){
+        if (x == 10) {
           break;
         }
         listTempatKuliner.add(TempatKuliner.fromJson(d));
@@ -80,7 +84,7 @@ class LandingPageState extends State<LandingPage> {
     }
   }
 
-  Future<bool> fetchUser(CookieRequest request) async {
+  Future<bool> fetchUserIsAdmin(CookieRequest request) async {
     final response =
         await request.get('http://127.0.0.1:8000/json-current-user/');
 
@@ -93,6 +97,12 @@ class LandingPageState extends State<LandingPage> {
     } else {
       throw Exception('Failed to check if current user is admin');
     }
+  }
+
+  Future<Map<String, dynamic>> fetchCurrentUser(CookieRequest request) async {
+    final response =
+        await request.get('http://127.0.0.1:8000/json-current-user/');
+    return response;
   }
 
   Future<List<CommunityForumEntry>> fetchCommunityForum(
@@ -245,10 +255,19 @@ class LandingPageState extends State<LandingPage> {
                       padding: const EdgeInsets.symmetric(vertical: 8.0),
                       child: TextFormField(
                         controller: _commentController,
-                        decoration: const InputDecoration(
-                          hintText: 'Write a comment...',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(8)),
+                        decoration: InputDecoration(
+                          hintText: "Write a comment...",
+                          filled: true,
+                          fillColor: Colors.white,
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: const BorderSide(
+                                color: Color(0xFF7C1D05), width: 2),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: const BorderSide(
+                                color: Color(0xFFC98809), width: 2),
                           ),
                         ),
                         maxLines: 3,
@@ -260,18 +279,24 @@ class LandingPageState extends State<LandingPage> {
                         },
                       ),
                     ),
-                    ElevatedButton(
-                      onPressed: () => postForumEntry(request),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF7C1D05),
-                      ),
-                      child: const Text('Post',
-                          style: TextStyle(
-                            color: Color(0xFFEBE9E1),
-                          )),
+                    Row(
+                      children: [
+                        ElevatedButton(
+                          onPressed: () => postForumEntry(request),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFFC98809),
+                          ),
+                          child: const Text(
+                            'Post',
+                            style: TextStyle(
+                              color: Color(0xFFEBE9E1),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
-                ),
+                )
               ),
               const SizedBox(height: 24),
               FutureBuilder<List<CommunityForumEntry>>(
@@ -333,15 +358,93 @@ class LandingPageState extends State<LandingPage> {
                                   Text(
                                     entry.fields.comment,
                                     style: const TextStyle(
-                                        fontSize: 14, color: Color(0xFF7A7A7A)),
+                                        fontSize: 14, color: Color(0xFF0F0401)),
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
                                     'Posted on ${DateFormat('yyyy-MM-dd').format(entry.fields.time)}',
                                     style: const TextStyle(
                                       fontSize: 12,
-                                      color: Color(0xFFC98809),
+                                      color: Color(0xFF7A7A7A),
                                     ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  FutureBuilder<Map<String, dynamic>>(
+                                    future: fetchCurrentUser(request),
+                                    builder:
+                                        (context, currentUserSnapshot) {
+                                      if (currentUserSnapshot
+                                              .connectionState ==
+                                          ConnectionState.waiting) {
+                                        return const SizedBox.shrink();
+                                      } else if (currentUserSnapshot
+                                          .hasError) {
+                                        return const SizedBox.shrink();
+                                      } else {
+                                        final currentUser =
+                                            currentUserSnapshot.data?['id'];
+                                        if (currentUser ==
+                                            entry.fields.user) {
+                                          return Row(
+                                            children: [
+                                              TextButton(
+                                                  onPressed: () {
+                                                    Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                          builder: (context) => EditForum(entry.pk)),
+                                                    );
+                                                  },
+                                                  style: TextButton.styleFrom(
+                                                    backgroundColor:
+                                                        const Color(0xFFC98809),
+                                                  ),
+                                                  child: const Text('Edit',
+                                                      style: TextStyle(
+                                                          color: Colors.white)),
+                                              ),
+                                              const SizedBox(width: 12),
+                                              TextButton(
+                                                onPressed: () async {
+                                                  final response =
+                                                      await request.get(
+                                                          "http://127.0.0.1:8000/delete-flutter/${entry.pk}/");
+
+                                                  if (context.mounted) {
+                                                    if (response['status'] ==
+                                                        'success') {
+                                                      ScaffoldMessenger.of(
+                                                              context)
+                                                          .showSnackBar(
+                                                              const SnackBar(
+                                                        content: Text(
+                                                            "Forum berhasil dihapus!"),
+                                                      ));
+                                                      setState(() {});
+                                                    } else {
+                                                      ScaffoldMessenger.of(
+                                                              context)
+                                                          .showSnackBar(
+                                                              const SnackBar(
+                                                        content: Text(
+                                                            "Terdapat kesalahan, silakan coba lagi."),
+                                                      ));
+                                                    }
+                                                  }
+                                                },
+                                                style: TextButton.styleFrom(
+                                                  backgroundColor:
+                                                      const Color(0xFFE43D12),
+                                                ),
+                                                child: const Text('Delete',
+                                                    style: TextStyle(
+                                                        color: Colors.white)),
+                                              )
+                                            ]);
+                                        }
+                                        return const SizedBox.shrink();
+                                      }
+                                    },
                                   ),
                                   const Divider(color: Color(0xFFC98809)),
                                 ],
