@@ -5,12 +5,13 @@ import 'package:jajan_jogja_mobile/marco/models/makanan.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
 
+import '../../farrel/models/food_plan_model.dart';
+import '../../farrel/screens/food_plan_list.dart';
 import '../../iyan/models/resto.dart';
 import '../../widgets/navbar.dart';
 import 'package:jajan_jogja_mobile/vander/widgets/review_list_widget.dart';
 import 'package:jajan_jogja_mobile/vander/screens/review_form.dart';
 
-import '../models/foodplan.dart';
 import 'food_card.dart';
 
 class FoodPlanService {
@@ -222,7 +223,10 @@ class _RestaurantPageState extends State<RestaurantPage> {
                         onPressed: () {
                           Navigator.of(context).pop();
                           // Redirect ke halaman Food Plan
-                          Navigator.pushNamed(context, '/foodPlanPage'); // TODO: Routing ke halaman create food plan
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => FoodPlanList()),
+                          );
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.orange,
