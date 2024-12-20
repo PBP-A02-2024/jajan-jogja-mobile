@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:jajan_jogja_mobile/nabeel/screens/search_page.dart';
 import 'package:jajan_jogja_mobile/zoya/screens/landing_page.dart';
+import 'package:jajan_jogja_mobile/farrel/screens/food_plan_list.dart';
 
-Container navbar(context, page){
+Container navbar(context, page) {
   return Container(
     height: 75,
     width: MediaQuery.sizeOf(context).width,
@@ -18,7 +19,7 @@ Container navbar(context, page){
           IconButton(
             icon: HugeIcon(
               icon: HugeIcons.strokeRoundedHome11,
-              color: page != "home"? Color(0XFF7A7A7A):Color(0xFFc98809),
+              color: page != "home" ? Color(0XFF7A7A7A) : Color(0xFFc98809),
               size: 24.0,
             ),
             onPressed: () {
@@ -30,43 +31,58 @@ Container navbar(context, page){
           ),
           Text(
             "Home",
-            style: TextStyle(color: page != "home"? Color(0XFF7A7A7A):Color(0xFFc98809)),
+            style: TextStyle(
+                color: page != "home" ? Color(0XFF7A7A7A) : Color(0xFFc98809)),
           )
         ])),
         Center(
-          child: Column(
-            children: [
-              IconButton(
-                icon: HugeIcon(
-                  icon: HugeIcons.strokeRoundedSearch01,
-                  color: page != "search"? Color(0XFF7A7A7A):Color(0xFFc98809),
-                  size: 24.0,
-                ),
-                onPressed: (){
-                  Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => SearchPage()),
-              );
-                },
+            child: Column(
+          children: [
+            IconButton(
+              icon: HugeIcon(
+                icon: HugeIcons.strokeRoundedSearch01,
+                color: page != "search" ? Color(0XFF7A7A7A) : Color(0xFFc98809),
+                size: 24.0,
               ),
-              Text("Search", style: TextStyle(color:page != "search"? Color(0XFF7A7A7A):Color(0xFFc98809)),) 
-            ],
-          )
-        ),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => SearchPage()),
+                );
+              },
+            ),
+            Text(
+              "Search",
+              style: TextStyle(
+                  color:
+                      page != "search" ? Color(0XFF7A7A7A) : Color(0xFFc98809)),
+            )
+          ],
+        )),
         Center(
             child: Column(
           children: [
             IconButton(
               icon: HugeIcon(
                 icon: HugeIcons.strokeRoundedVegetarianFood,
-                color: page != "food plans"? Color(0XFF7A7A7A):Color(0xFFc98809),
+                color: page != "food plans"
+                    ? Color(0XFF7A7A7A)
+                    : Color(0xFFc98809),
                 size: 24.0,
               ),
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => FoodPlanList()),
+                );
+              },
             ),
             Text(
               "Food Plans",
-              style: TextStyle(color: page != "food plans"? Color(0XFF7A7A7A):Color(0xFFc98809)),
+              style: TextStyle(
+                  color: page != "food plans"
+                      ? Color(0XFF7A7A7A)
+                      : Color(0xFFc98809)),
             )
           ],
         )),
@@ -76,14 +92,18 @@ Container navbar(context, page){
             IconButton(
               icon: HugeIcon(
                 icon: HugeIcons.strokeRoundedUser,
-                color: page != "profile"? Color(0XFF7A7A7A):Color(0xFFc98809),
+                color:
+                    page != "profile" ? Color(0XFF7A7A7A) : Color(0xFFc98809),
                 size: 24.0,
               ),
               onPressed: () {},
             ),
             Text(
               "Profile",
-              style: TextStyle(color: page != "profile"? Color(0XFF7A7A7A):Color(0xFFc98809)),
+              style: TextStyle(
+                  color: page != "profile"
+                      ? Color(0XFF7A7A7A)
+                      : Color(0xFFc98809)),
             )
           ],
         )),
