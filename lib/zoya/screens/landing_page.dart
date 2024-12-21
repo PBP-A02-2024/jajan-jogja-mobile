@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:intl/intl.dart';
 import 'package:jajan_jogja_mobile/iyan/models/resto.dart';
+import 'package:jajan_jogja_mobile/iyan/screens/create_tempat_kuliner.dart';
 import 'package:jajan_jogja_mobile/iyan/widgets/resto_card.dart';
+import 'package:jajan_jogja_mobile/iyan/widgets/add_resto.dart';
 import 'package:jajan_jogja_mobile/zoya/models/community_forum_entry.dart';
 import 'package:jajan_jogja_mobile/zoya/screens/edit_forum.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
@@ -28,12 +30,20 @@ class LandingPage extends StatefulWidget {
 class LandingPageState extends State<LandingPage> {
   final _commentController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  var _isAdmin = false;
 
   @override
   void initState(){
     super.initState();
+    _fetchData();
+  }
 
-    setState(() {});
+  Future<void> _fetchData() async {
+    final request = context.read<CookieRequest>();
+    final adminStatus = await fetchUserIsAdmin(request);
+    setState(() {
+      _isAdmin = adminStatus;
+    });
   }
 
   Future<List<TempatKuliner>> fetchTempatKuliner(CookieRequest request) async {
@@ -102,7 +112,12 @@ class LandingPageState extends State<LandingPage> {
   Future<Map<String, dynamic>> fetchCurrentUser(CookieRequest request) async {
     final response =
         await request.get('http://127.0.0.1:8000/json-current-user/');
-    return response;
+    
+    if (response != null) {
+      return response;
+    } else {
+      throw Exception('Failed to fetch current user');
+    }
   }
 
   Future<List<CommunityForumEntry>> fetchCommunityForum(
@@ -222,18 +237,19 @@ class LandingPageState extends State<LandingPage> {
                   } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                     return const Center(child: Text('No restaurant available'));
                   } else {
-                    return Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: snapshot.data!.map((entry) {
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 8.0),
-                            child: CardTempat(entry),
-                          );
-                        }).toList(),
-                      ),
-                    );
+                    return 
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: snapshot.data!.map((entry) {
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 8.0),
+                              child: CardTempat(entry, isAdmin: _isAdmin,),
+                            );
+                          }).toList(),
+                        ),
+                      );
                   }
                 },
               ),
