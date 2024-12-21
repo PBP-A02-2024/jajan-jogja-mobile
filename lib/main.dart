@@ -35,7 +35,8 @@ class MyApp extends StatelessWidget {
           ),
           scaffoldBackgroundColor: const Color(0xFFEBE9E1), // white background
           useMaterial3: true,
-          textTheme: GoogleFonts.jockeyOneTextTheme( // Apply Jockey One font to text theme
+          textTheme: GoogleFonts.jockeyOneTextTheme(
+            // Apply Jockey One font to text theme
             const TextTheme(
               bodySmall: TextStyle(color: Color(0xFF0F0401)), // black text
               labelSmall: TextStyle(color: Color(0xFF7A7A7A)), // grey text

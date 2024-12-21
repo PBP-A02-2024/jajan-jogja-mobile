@@ -12,223 +12,226 @@ class CreateTempatKuliner extends StatefulWidget {
 
 class _CreateTempatKulinerState extends State<CreateTempatKuliner> {
   final _formKey = GlobalKey<FormState>();
-  String _namaController = '';
-  String _descriptionController = '';
-  String _alamatController = '';
-  int _longitudeController = 0; // integer for longitude
-  int _latitudeController = 0; // integer for latitude
-  TimeOfDay _jamBukaController = TimeOfDay(hour: 9, minute: 0); // Time input for jam buka
-  TimeOfDay _jamTutupController = TimeOfDay(hour: 21, minute: 0); // Time input for jam tutup
-  String _fotoLinkController = '';
-  List<int> _variasiController = []; // List for variations
-  List<String> _variasiOptions = []; // Placeholder for variations options
-  
-  // Function to pick time
-  Future<void> _selectTime(BuildContext context, bool isBuka) async {
-    final TimeOfDay? picked = await showTimePicker(
-      context: context,
-      initialTime: isBuka ? _jamBukaController : _jamTutupController,
-    );
-    if (picked != null && picked != (isBuka ? _jamBukaController : _jamTutupController)) {
-      setState(() {
-        if (isBuka) {
-          _jamBukaController = picked;
-        } else {
-          _jamTutupController = picked;
-        }
-      });
+  final TextEditingController _namaController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _alamatController = TextEditingController();
+  final TextEditingController _fotoLinkController = TextEditingController();
+  double _longitudeController = 0.0;
+  double _latitudeController = 0.0;
+  TimeOfDay _jamBukaController = TimeOfDay(hour: 9, minute: 0);
+  TimeOfDay _jamTutupController = TimeOfDay(hour: 21, minute: 0);
+  double _ratingController = 0.0; // Default rating
+  List<int> _variasiController = [];
+  List<Map<String, dynamic>> _variasiOptions = [];
+
+  Future<void> _fetchVariasi() async {
+    final request = context.read<CookieRequest>();
+    try {
+      final response = await request.get('http://127.0.0.1:8000/adm/json-variasi/');
+      if (response != null) {
+        setState(() {
+          _variasiOptions = List<Map<String, dynamic>>.from(response.map((item) {
+            return {
+              'id': item['pk'],
+              'nama': item['fields']['nama'],
+            };
+          }));
+        });
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error mengambil variasi: $e")),
+      );
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchVariasi();
+  }
+
+  Future<void> _createTempatKuliner() async {
+    final request = context.read<CookieRequest>();
+    try {
+      final data = {
+        "nama": _namaController.text,
+        "description": _descriptionController.text,
+        "alamat": _alamatController.text,
+        "longitude": _longitudeController,
+        "latitude": _latitudeController,
+        "jam_buka": _jamBukaController.format(context),
+        "jam_tutup": _jamTutupController.format(context),
+        "foto_link": _fotoLinkController.text,
+        "rating": _ratingController,
+        "variasi": _variasiController,
+      };
+
+      final response = await request.postJson(
+        'http://127.0.0.1:8000/adm/create-tempat-kuliner/',
+        jsonEncode(data),
+      );
+
+      if (response['status'] == 'success') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Tempat kuliner berhasil ditambahkan!")),
+        );
+        Navigator.pop(context);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Error: ${response['message'] ?? 'Terjadi kesalahan'}")),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error saat menambahkan tempat kuliner: $e")),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final request = context.watch<CookieRequest>();
-
     return Scaffold(
       appBar: AppBar(
-        title: const Center(child: Text('Tambah Tempat Kuliner')),
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        foregroundColor: Colors.white,
+        title: const Text("Tambah Tempat Kuliner"),
       ),
       body: Form(
         key: _formKey,
         child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildTextField(
-                hintText: "Nama Tempat Kuliner",
-                labelText: "Nama Tempat Kuliner",
-                onChanged: (value) => setState(() {
-                  _namaController = value!;
-                }),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return "Nama tempat kuliner tidak boleh kosong!";
-                  }
-                  return null;
-                },
-              ),
-              _buildTextField(
-                hintText: "Deskripsi Tempat Kuliner",
-                labelText: "Deskripsi Tempat Kuliner",
-                onChanged: (value) => setState(() {
-                  _descriptionController = value!;
-                }),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return "Deskripsi tidak boleh kosong!";
-                  }
-                  return null;
-                },
-              ),
-              _buildTextField(
-                hintText: "Alamat Tempat Kuliner",
-                labelText: "Alamat Tempat Kuliner",
-                onChanged: (value) => setState(() {
-                  _alamatController = value!;
-                }),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return "Alamat tidak boleh kosong!";
-                  }
-                  return null;
-                },
-              ),
-              _buildNumberField(
-                hintText: "Longitude",
-                labelText: "Longitude",
-                onChanged: (value) => setState(() {
-                  _longitudeController = int.tryParse(value!) ?? 0;
-                }),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return "Longitude tidak boleh kosong!";
-                  }
-                  return null;
-                },
-              ),
-              _buildNumberField(
-                hintText: "Latitude",
-                labelText: "Latitude",
-                onChanged: (value) => setState(() {
-                  _latitudeController = int.tryParse(value!) ?? 0;
-                }),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return "Latitude tidak boleh kosong!";
-                  }
-                  return null;
-                },
-              ),
-              _buildTimePickerField(
-                hintText: "Jam Buka",
-                labelText: "Jam Buka",
-                time: _jamBukaController,
-                onTap: () => _selectTime(context, true),
-              ),
-              _buildTimePickerField(
-                hintText: "Jam Tutup",
-                labelText: "Jam Tutup",
-                time: _jamTutupController,
-                onTap: () => _selectTime(context, false),
-              ),
-              _buildTextField(
-                hintText: "Foto Link",
-                labelText: "Foto Link",
-                onChanged: (value) => setState(() {
-                  _fotoLinkController = value!;
-                }),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return "Foto link tidak boleh kosong!";
-                  }
-                  return null;
-                },
-              ),
-              _buildVariationDropdown(),
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                _buildTextField(
+                  hintText: "Nama Tempat Kuliner",
+                  labelText: "Nama Tempat Kuliner",
+                  controller: _namaController,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Nama tidak boleh kosong!";
+                    }
+                    return null;
+                  },
+                ),
+                _buildTextField(
+                  hintText: "Deskripsi",
+                  labelText: "Deskripsi Tempat Kuliner",
+                  controller: _descriptionController,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Deskripsi tidak boleh kosong!";
+                    }
+                    return null;
+                  },
+                ),
+                _buildTextField(
+                  hintText: "Alamat",
+                  labelText: "Alamat",
+                  controller: _alamatController,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Alamat tidak boleh kosong!";
+                    }
+                    return null;
+                  },
+                ),
+                _buildNumberField(
+                  hintText: "Longitude",
+                  labelText: "Longitude",
+                  onChanged: (value) {
+                    _longitudeController = double.tryParse(value!) ?? 0.0;
+                  },
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Longitude tidak boleh kosong!";
+                    }
+                    return null;
+                  },
+                ),
+                _buildNumberField(
+                  hintText: "Latitude",
+                  labelText: "Latitude",
+                  onChanged: (value) {
+                    _latitudeController = double.tryParse(value!) ?? 0.0;
+                  },
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Latitude tidak boleh kosong!";
+                    }
+                    return null;
+                  },
+                ),
+                _buildTimePickerField(
+                  hintText: "Jam Buka",
+                  labelText: "Jam Buka",
+                  time: _jamBukaController,
+                  onTap: () => _selectTime(context, true),
+                ),
+                _buildTimePickerField(
+                  hintText: "Jam Tutup",
+                  labelText: "Jam Tutup",
+                  time: _jamTutupController,
+                  onTap: () => _selectTime(context, false),
+                ),
+                _buildTextField(
+                  hintText: "Foto Link",
+                  labelText: "Foto Link",
+                  controller: _fotoLinkController,
+                ),
+                _buildDisabledRatingField(),
+                _buildVariasiCheckbox(),
+                Center(
                   child: ElevatedButton(
-                    onPressed: () async {
+                    onPressed: () {
                       if (_formKey.currentState!.validate()) {
-                        final response = await request.postJson(
-                          "http://127.0.0.1:8000/create-tempat-kuliner/",
-                          jsonEncode({
-                            "nama": _namaController,
-                            "description": _descriptionController,
-                            "alamat": _alamatController,
-                            "longitude": _longitudeController,
-                            "latitude": _latitudeController,
-                            "jam_buka": _jamBukaController.format(context),
-                            "jam_tutup": _jamTutupController.format(context),
-                            "foto_link": _fotoLinkController,
-                            "variasi": _variasiController,
-                          }),
-                        );
-                        if (response['status'] == 'success') {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text("Tempat kuliner berhasil ditambahkan!")),
-                          );
-                          Navigator.pop(context);
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text("Terjadi kesalahan, coba lagi.")),
-                          );
-                        }
+                        _createTempatKuliner();
                       }
                     },
-                    child: const Text("Save"),
+                    child: const Text("Simpan"),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  Padding _buildTextField({
+  Widget _buildTextField({
     required String hintText,
     required String labelText,
-    required Function(String?) onChanged,
-    required String? Function(String?) validator,
+    required TextEditingController controller,
+    String? Function(String?)? validator,
   }) {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: TextFormField(
+        controller: controller,
         decoration: InputDecoration(
           hintText: hintText,
           labelText: labelText,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(5.0),
-          ),
+          border: const OutlineInputBorder(),
         ),
-        onChanged: onChanged,
         validator: validator,
       ),
     );
   }
 
-  Padding _buildNumberField({
+  Widget _buildNumberField({
     required String hintText,
     required String labelText,
     required Function(String?) onChanged,
     required String? Function(String?) validator,
   }) {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: TextFormField(
         keyboardType: TextInputType.number,
         decoration: InputDecoration(
           hintText: hintText,
           labelText: labelText,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(5.0),
-          ),
+          border: const OutlineInputBorder(),
         ),
         onChanged: onChanged,
         validator: validator,
@@ -236,14 +239,28 @@ class _CreateTempatKulinerState extends State<CreateTempatKuliner> {
     );
   }
 
-  Padding _buildTimePickerField({
+  Widget _buildDisabledRatingField() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: TextFormField(
+        initialValue: _ratingController.toString(),
+        decoration: const InputDecoration(
+          labelText: "Rating (Tidak dapat diubah)",
+          border: OutlineInputBorder(),
+        ),
+        enabled: false,
+      ),
+    );
+  }
+
+  Widget _buildTimePickerField({
     required String hintText,
     required String labelText,
     required TimeOfDay time,
     required VoidCallback onTap,
   }) {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: GestureDetector(
         onTap: onTap,
         child: AbsorbPointer(
@@ -251,9 +268,7 @@ class _CreateTempatKulinerState extends State<CreateTempatKuliner> {
             decoration: InputDecoration(
               hintText: hintText,
               labelText: labelText,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(5.0),
-              ),
+              border: const OutlineInputBorder(),
             ),
             controller: TextEditingController(text: time.format(context)),
           ),
@@ -262,31 +277,46 @@ class _CreateTempatKulinerState extends State<CreateTempatKuliner> {
     );
   }
 
-  Padding _buildVariationDropdown() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: DropdownButtonFormField<int>(
-        decoration: InputDecoration(
-          labelText: "Variasi",
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(5.0),
+  Widget _buildVariasiCheckbox() {
+    if (_variasiOptions.isEmpty) {
+      return const Text("Tidak ada variasi yang tersedia.");
+    }
+    return Column(
+      children: _variasiOptions.map((variasi) {
+        return Card(
+          margin: const EdgeInsets.symmetric(vertical: 5),
+          elevation: 2,
+          child: CheckboxListTile(
+            title: Text(variasi['nama']),
+            value: _variasiController.contains(variasi['id']),
+            onChanged: (bool? value) {
+              setState(() {
+                if (value == true) {
+                  _variasiController.add(variasi['id']);
+                } else {
+                  _variasiController.remove(variasi['id']);
+                }
+              });
+            },
           ),
-        ),
-        value: _variasiController.isEmpty ? null : _variasiController.first,
-        onChanged: (int? newValue) {
-          setState(() {
-            if (newValue != null) {
-              _variasiController = [newValue];
-            }
-          });
-        },
-        items: _variasiOptions.map((variasi) {
-          return DropdownMenuItem(
-            value: int.parse(variasi),
-            child: Text(variasi),
-          );
-        }).toList(),
-      ),
+        );
+      }).toList(),
     );
+  }
+
+  Future<void> _selectTime(BuildContext context, bool isBuka) async {
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: isBuka ? _jamBukaController : _jamTutupController,
+    );
+    if (picked != null) {
+      setState(() {
+        if (isBuka) {
+          _jamBukaController = picked;
+        } else {
+          _jamTutupController = picked;
+        }
+      });
+    }
   }
 }

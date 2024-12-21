@@ -1,12 +1,68 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:jajan_jogja_mobile/marco/models/makanan.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
 
+import '../../farrel/models/food_plan_model.dart';
+import '../../farrel/screens/food_plan_list.dart';
 import '../../iyan/models/resto.dart';
 import '../../widgets/navbar.dart';
 import 'package:jajan_jogja_mobile/vander/widgets/review_list_widget.dart';
 import 'package:jajan_jogja_mobile/vander/screens/review_form.dart';
+
+import 'food_card.dart';
+
+class FoodPlanService {
+  final CookieRequest request;
+
+  FoodPlanService({required this.request});
+
+  // Fetch food plan
+  Future<List<FoodPlan>> fetchFoodPlans() async {
+    final response = await request.get(
+        'http://127.0.0.1:8000/restaurant/get_food_plans_json');
+
+    if (response != null) {
+      String jsonString = json.encode(response);
+      return foodPlanFromJson(jsonString);
+    } else {
+      throw Exception('Failed to load food plans');
+    }
+  }
+
+  // Save to food plan
+  Future<void> saveToFoodPlan({
+    required String currentResto,
+    required String makananId,
+    required List<Map<String, dynamic>> foodPlansData,
+  }) async {
+    try {
+      Map<String, dynamic> postData = {
+        'currentResto': currentResto,
+        'makanan_id': makananId,
+        'foodPlansData': jsonEncode(foodPlansData),
+      };
+
+      // POST data
+      final response = await request.post(
+        'http://127.0.0.1:8000/restaurant/save_food_plan_flutter',
+        postData,
+      );
+
+      if (response['message'] != null) {
+        print(response['message']);
+      } else if (response['error'] != null) {
+        throw Exception(response['er  ror']);
+      } else {
+        throw Exception('Unexpected response from the server.');
+      }
+    } catch (e) {
+      throw Exception('Failed to save food plan');
+    }
+  }
+}
 
 
 class RestaurantPage extends StatefulWidget {
@@ -24,6 +80,11 @@ class _RestaurantPageState extends State<RestaurantPage> {
   List<Makanan> makananList = [];
   bool isLoading = true;
   String? errorMessage;
+  List<FoodPlan> foodPlans = [];
+
+  // FoodPlanService instance
+  late FoodPlanService foodPlanService;
+  bool _isServiceInitialized = false;
 
   // Fungsi untuk mengambil kedua data secara bersamaan
   Future<Map<String, dynamic>> fetchAllData(CookieRequest request) async {
@@ -36,6 +97,7 @@ class _RestaurantPageState extends State<RestaurantPage> {
       return {
         'makananList': responses[0],
         'restaurant': responses[1],
+
       };
     } catch (e) {
       throw Exception('Failed to load data: $e');
@@ -80,9 +142,23 @@ class _RestaurantPageState extends State<RestaurantPage> {
     }
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_isServiceInitialized) {
+      final request = context.read<CookieRequest>();
+      foodPlanService = FoodPlanService(request: request);
+      _isServiceInitialized = true;
+      fetchAllData(request); // Fetch data after initializing the service
+    }
+  }
+
+
+
   final tempatKulinerId = "2dbf8eaa-7533-4047-b420-93b496cd4ca0";
   final tempatKulinerNama = "NamakuBebas";
   int _reviewListKey = 0;
+
 
   void _goToAddReview() async {
     // Navigate to ReviewEntryFormPage and wait for the result
@@ -103,6 +179,193 @@ class _RestaurantPageState extends State<RestaurantPage> {
         _reviewListKey++;
       });
     }
+
+  }
+
+  void _showFoodPlanModal(Makanan makanan) async {
+    try {
+      // Fetch the latest Food Plans
+      List<FoodPlan> fetchedFoodPlans = await foodPlanService.fetchFoodPlans();
+
+      if (fetchedFoodPlans.isEmpty) {
+        // Jika Food Plans kosong, tampilkan dialog khusus
+        showDialog(
+          context: context,
+          builder: (context) {
+            return Dialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16.0),
+              ),
+              child: Container(
+                padding: const EdgeInsets.all(16.0),
+                width: 300,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "No Food Plans Found",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.red,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      "No Food Plan Available :( \nPlease add Food Plan first!",
+                      style: TextStyle(fontSize: 16),
+                    ),
+                    const SizedBox(height: 24),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          // Redirect ke halaman Food Plan
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => FoodPlanList()),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.orange,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                        ),
+                        child: const Text(
+                          "Go to Food Plans",
+                          style: TextStyle(
+                            color: Color(0xFFEBE9E1),
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+        return;
+      }
+
+      // Jika Food Plans tidak kosong, tampilkan dialog utama
+      List<Map<String, dynamic>> foodPlansData = fetchedFoodPlans.map((plan) {
+        return {
+          'id': plan.pk,
+          'checked': plan.fields.makanan.contains(makanan.pk),
+        };
+      }).toList();
+
+      showDialog(
+        context: context,
+        builder: (context) {
+          return StatefulBuilder(
+            builder: (context, setState) {
+              return Dialog(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16.0),
+                ),
+                child: Container(
+                  padding: const EdgeInsets.all(16.0),
+                  width: 300,
+                  height: (fetchedFoodPlans.length * 60.0 + 100).clamp(200.0, 500.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            "Add to Food Plan",
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.close, color: Colors.red),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16.0),
+                      Expanded(
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: fetchedFoodPlans.length,
+                          itemBuilder: (context, index) {
+                            final plan = fetchedFoodPlans[index];
+                            final isChecked = foodPlansData[index]['checked'] as bool;
+
+                            return CheckboxListTile(
+                              title: Text(plan.fields.nama),
+                              value: isChecked,
+                              onChanged: (bool? value) {
+                                setState(() {
+                                  foodPlansData[index]['checked'] = value ?? false;
+                                });
+                              },
+                              controlAffinity: ListTileControlAffinity.leading,
+                            );
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 16.0),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            try {
+                              await foodPlanService.saveToFoodPlan(
+                                currentResto: widget.idTempatKuliner,
+                                makananId: makanan.pk,
+                                foodPlansData: foodPlansData,
+                              );
+
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Food plan updated successfully!')),
+                              );
+                              Navigator.of(context).pop();
+                            } catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Failed to update food plan: $e')),
+                              );
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.orange,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                          ),
+                          child: const Text(
+                            "Save",
+                            style: TextStyle(
+                              color: Color(0xFFEBE9E1),
+                            ),
+                          ),
+
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          );
+        },
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error fetching food plans: $e')),
+      );
+    }
   }
 
   @override
@@ -110,7 +373,7 @@ class _RestaurantPageState extends State<RestaurantPage> {
     final request = context.watch<CookieRequest>();
 
     return Scaffold(
-      backgroundColor: const Color(0xFFEBE9E1), // Background color
+      backgroundColor: const Color(0xFFEBE9E1),
       appBar: AppBar(
         backgroundColor: const Color(0xFFEBE9E1),
         elevation: 0,
@@ -161,7 +424,7 @@ class _RestaurantPageState extends State<RestaurantPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Restaurant Image
+                  // Foto restoran
                   Container(
                     decoration: BoxDecoration(
                       border: Border.all(color: const Color(0xFFD6536D), width: 4),
@@ -181,7 +444,7 @@ class _RestaurantPageState extends State<RestaurantPage> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  // Restaurant Name
+                  // Nama restoran
                   Text(
                     restaurant?.fields.nama ?? 'Nama Restaurant',
                     style: const TextStyle(
@@ -191,7 +454,7 @@ class _RestaurantPageState extends State<RestaurantPage> {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  // Restaurant Address
+                  // Alamat restoran
                   Text(
                     restaurant?.fields.alamat ?? 'Alamat tidak tersedia',
                     style: const TextStyle(
@@ -209,7 +472,7 @@ class _RestaurantPageState extends State<RestaurantPage> {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  // Opening Hours
+                  // Jam buka tutup restoran
                   Text(
                     'Open: ${restaurant?.fields.jamBuka ?? 'N/A'} - ${restaurant?.fields.jamTutup ?? 'N/A'} WIB',
                     style: const TextStyle(
@@ -218,7 +481,7 @@ class _RestaurantPageState extends State<RestaurantPage> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  // Rating and Reviews
+                  // Rating dan Reviews
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
@@ -257,7 +520,8 @@ class _RestaurantPageState extends State<RestaurantPage> {
                     ),
                   ),
                   const SizedBox(height: 24),
-                  // Foods Section
+
+                  // == List Makanan ==
                   const Text(
                     'Menu',
                     style: TextStyle(
@@ -267,89 +531,22 @@ class _RestaurantPageState extends State<RestaurantPage> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  // Tampilkan list makanan yang diambil dari API
+                  // Tampilkan list makanan
                   ListView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     itemCount: makananList.length,
                     itemBuilder: (context, index) {
                       final food = makananList[index];
-                      return GestureDetector(
-                        onTap: () {
-                          // Tampilkan detail makanan atau modal di sini
+                      return FoodCard(
+                        food: food,
+                        onAddToPlan: () {
+                          _showFoodPlanModal(food);
                         },
-                        child: Container(
-                          margin: const EdgeInsets.only(bottom: 16),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: const Color(0xFFC98809), width: 4),
-                            borderRadius: BorderRadius.circular(24),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(12),
-                            child: Row(
-                              children: [
-                                // Food Image
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(20),
-                                  child: Image.network(
-                                    food.fields.fotoLink,
-                                    width: 100,
-                                    height: 100,
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (context, error, stackTrace) {
-                                      return const Center(child: Text('Image not available'));
-                                    },
-                                  ),
-                                ),
-                                const SizedBox(width: 16),
-                                // Food Details
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        food.fields.nama,
-                                        style: const TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold,
-                                          color: Color(0xFF7C1D05),
-                                        ),
-                                      ),
-                                      const SizedBox(height: 8),
-                                      Text(
-                                        food.fields.description,
-                                        style: const TextStyle(
-                                          fontSize: 14,
-                                          color: Color(0xFF7A7A7A),
-                                        ),
-                                      ),
-                                      const SizedBox(height: 8),
-                                      Text(
-                                        'Rp${food.fields.harga}',
-                                        style: const TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                          color: Color(0xFF7C1D05),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                // Add to Cart or Action Button
-                                IconButton(
-                                  icon: const Icon(Icons.add_circle_outline),
-                                  color: const Color(0xFFE43D12),
-                                  onPressed: () {
-                                    // Handle add to cart atau aksi lainnya
-                                  },
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
                       );
                     },
                   ),
+
                   const SizedBox(height: 24),
                   // Reviews Placeholder
                   const Text(

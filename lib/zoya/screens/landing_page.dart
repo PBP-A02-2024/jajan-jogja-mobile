@@ -6,7 +6,6 @@ import 'package:intl/intl.dart';
 import 'package:jajan_jogja_mobile/iyan/models/resto.dart';
 import 'package:jajan_jogja_mobile/iyan/screens/create_tempat_kuliner.dart';
 import 'package:jajan_jogja_mobile/iyan/widgets/resto_card.dart';
-import 'package:jajan_jogja_mobile/iyan/widgets/add_resto.dart';
 import 'package:jajan_jogja_mobile/zoya/models/community_forum_entry.dart';
 import 'package:jajan_jogja_mobile/zoya/screens/edit_forum.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
@@ -237,19 +236,23 @@ class LandingPageState extends State<LandingPage> {
                   } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                     return const Center(child: Text('No restaurant available'));
                   } else {
-                    return 
-                      Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: snapshot.data!.map((entry) {
-                            return Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 8.0),
-                              child: CardTempat(entry, isAdmin: _isAdmin,),
-                            );
-                          }).toList(),
-                        ),
-                      );
+                    return Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: snapshot.data!.map((entry) {
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            child: CardTempat(
+                            entry,
+                            isAdmin: _isAdmin,
+                            request: request, 
+                            onDelete: () => setState(() {}), // Callback untuk refresh data
+                          ),
+                          );
+                        }).toList(),
+                      ),
+                    );
                   }
                 },
               ),
@@ -478,6 +481,43 @@ class LandingPageState extends State<LandingPage> {
         ),
       ),
       bottomNavigationBar: navbar(context, "home"),
-    );
+      // Menambahkan tombol Add di pojok kanan bawah
+      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+      floatingActionButton: _isAdmin
+          ? Padding(
+              padding: const EdgeInsets.only(bottom: 70), // Menyesuaikan jarak dari navbar
+              child: FloatingActionButton(
+                onPressed: () {
+                  // Navigasi ke halaman CreateTempatKuliner
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const CreateTempatKuliner(),
+                    ),
+                  );
+                },
+                backgroundColor: const Color.fromARGB(255, 237, 178, 60),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [
+                    Icon(
+                      Icons.add,
+                      color: Color.fromARGB(255, 151, 103, 0),
+                      size: 24,
+                    ),
+                    SizedBox(height: 4),
+                    Text(
+                      'Restoran',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Color.fromARGB(255, 151, 103, 0),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            )
+            : const SizedBox(), // Tidak menampilkan tombol jika bukan admin
+      );
+    }
   }
-}
